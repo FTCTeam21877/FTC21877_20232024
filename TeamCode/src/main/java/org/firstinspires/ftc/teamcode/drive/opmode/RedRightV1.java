@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
@@ -7,10 +9,12 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
-@TeleOp(name = "RedRightV1")
+@Autonomous(name = "RedRightV1")
 public class RedRightV1 extends LinearOpMode {
 
     boolean USE_WEBCAM;
@@ -23,6 +27,7 @@ public class RedRightV1 extends LinearOpMode {
     @Override
     public void runOpMode() {
         // This 2023-2024 OpMode illustrates the basics of TensorFlow Object Detection, using
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         // a custom TFLite object detection model.
         USE_WEBCAM = true;
         // Initialize TFOD before waitForStart.
@@ -32,9 +37,14 @@ public class RedRightV1 extends LinearOpMode {
         telemetry.addData(">", "Touch Play to start OpMode");
         telemetry.update();
         waitForStart();
-        if (opModeIsActive()) {
+
+        //Set initial position
+        Pose2d startPose = new Pose2d(-31.5,-62.5,Math.toRadians(90));
+        drive.setPoseEstimate(startPose);
+
+        //if (opModeIsActive()) {
             // Put run blocks here.
-            while (opModeIsActive()) {
+            /*while (opModeIsActive()) {
                 // Put loop blocks here.
                 telemetryTfod();
                 // Push telemetry to the Driver Station.
@@ -48,8 +58,38 @@ public class RedRightV1 extends LinearOpMode {
                 }
                 // Share the CPU.
                 sleep(20);
+            }*/
+            //Wait until object is detected
+            List<Recognition> myTfodRecognitions = null;
+            while (true) {
+                myTfodRecognitions = myTfodProcessor.getRecognitions();
+                int noOfObjects = myTfodRecognitions.size();
+                if (noOfObjects > 0) {
+                    break;
+                }
+                sleep(1000);
+                telemetry.addLine("Waiting to detect");
             }
-        }
+            int position = getPosition(myTfodRecognitions);
+            //Test position
+            int degree = 0;
+            if (position == 1) {
+                degree = -90;
+            } else if (position == 2) {
+                degree = 0;
+            } else {
+                degree = 90;
+            }
+            TrajectorySequence testingByTurning = drive.trajectorySequenceBuilder(startPose)
+                    .turn(Math.toRadians(degree))
+                    .build();
+            drive.followTrajectorySequence(testingByTurning);
+        telemetry.addData("Postion", JavaUtil.formatNumber(position,0));
+
+        telemetry.addLine("Waiting before exiting");
+            telemetry.update();
+            sleep(10000);
+        //}
     }
 
     /**
@@ -114,4 +154,46 @@ public class RedRightV1 extends LinearOpMode {
             telemetry.addData("- Size", JavaUtil.formatNumber(myTfodRecognition.getWidth(), 0) + " x " + JavaUtil.formatNumber(myTfodRecognition.getHeight(), 0));
         }
     }
+
+    /**
+     * Display info (using telemetry) for a detected object
+     */
+    private int getPosition(List<Recognition> myTfodRecognitions) {
+        Recognition myTfodRecognition;
+        float x = 1000;
+        float y = 1000;
+        int position = 0;
+
+        // Iterate through list and call a function to display info for each recognized object.
+        for (Recognition myTfodRecognition_item : myTfodRecognitions) {
+            myTfodRecognition = myTfodRecognition_item;
+            // Display info about the recognition.
+            telemetry.addLine("");
+            // Display label and confidence.
+            // Display the label and confidence for the recognition.
+            telemetry.addData("Image", myTfodRecognition.getLabel() + " (" + JavaUtil.formatNumber(myTfodRecognition.getConfidence() * 100, 0) + " % Conf.)");
+            // Display position.
+            x = (myTfodRecognition.getLeft() + myTfodRecognition.getRight()) / 2;
+            y = (myTfodRecognition.getTop() + myTfodRecognition.getBottom()) / 2;
+            // Display the position of the center of the detection boundary for the recognition
+            telemetry.addData("- Position", JavaUtil.formatNumber(x, 0) + ", " + JavaUtil.formatNumber(y, 0));
+            // Display size
+            // Display the size of detection boundary for the recognition
+            telemetry.addData("- Size", JavaUtil.formatNumber(myTfodRecognition.getWidth(), 0) + " x " + JavaUtil.formatNumber(myTfodRecognition.getHeight(), 0));
+            if (myTfodRecognition.getWidth() < 500 &&  myTfodRecognition.getHeight() < 500){
+                break;
+            }
+        }
+        if (x < 200) {
+            position = 1;
+        } else if (x < 700) {
+            position = 2;
+        } else {
+            position = 3;
+        }
+        telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
+        //telemetry.update();
+        return position;
+    }
+
 }
