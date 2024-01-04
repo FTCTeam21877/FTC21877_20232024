@@ -1298,6 +1298,7 @@ raw ss_r2d2_up
 raw ss_roger_roger
 raw ss_siren
 raw ss_wookie
+raw teleopfinal
 raw texture_fragment_shader
 raw texture_vertex_shader
 raw warningmessage

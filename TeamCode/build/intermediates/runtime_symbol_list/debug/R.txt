@@ -1297,6 +1297,7 @@ int raw ss_r2d2_up 0x7f0d001a
 int raw ss_roger_roger 0x7f0d001b
 int raw ss_siren 0x7f0d001c
 int raw ss_wookie 0x7f0d001d
+int raw teleopfinal 0x7f0d0022
 int raw texture_fragment_shader 0x7f0d001e
 int raw texture_vertex_shader 0x7f0d001f
 int raw warningmessage 0x7f0d0020

@@ -7,6 +7,10 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityCons
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -25,6 +29,18 @@ public class RedRightV1 extends LinearOpMode {
     TfodProcessor myTfodProcessor;
     VisionPortal myVisionPortal;
 
+    private DcMotor viperSlideLeftMotor;
+    private DcMotor viperSlideRightMotor;
+
+    private DcMotor armMotor;
+
+    private Servo clawLeftServo;
+    private Servo clawRightServo;
+
+    private Servo wristServo;
+
+    private Servo launchServo;
+
     SampleMecanumDrive drive;
 
     Pose2d startPose;
@@ -35,6 +51,26 @@ public class RedRightV1 extends LinearOpMode {
     public void runOpMode() {
         // This 2023-2024 OpMode illustrates the basics of TensorFlow Object Detection, using
         drive = new SampleMecanumDrive(hardwareMap);
+        viperSlideLeftMotor = hardwareMap.get(DcMotor.class,"viperSlideleft");
+        viperSlideLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        viperSlideLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        viperSlideRightMotor = hardwareMap.get(DcMotor.class,"viperslideright");
+        viperSlideRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //viperSlideRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        armMotor = hardwareMap.get(DcMotor.class,"ArmMotor");
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        clawLeftServo = hardwareMap.get(Servo.class, "ClawLeft");
+        clawRightServo = hardwareMap.get(Servo.class,"ClawRight");
+        wristServo = hardwareMap.get(Servo.class,"WristServo");
+        launchServo = hardwareMap.get(Servo.class,"plane");
+
+        clawLeftServo.setPosition(0.39);
+        clawRightServo.setPosition(0.55);
+        wristServo.setDirection(Servo.Direction.REVERSE);
+        wristServo.setPosition(0.23);
+        launchServo.setPosition(0.50);
         // a custom TFLite object detection model.
         USE_WEBCAM = true;
         // Initialize TFOD before waitForStart.
@@ -46,7 +82,7 @@ public class RedRightV1 extends LinearOpMode {
         waitForStart();
 
         //Set initial position
-        startPose = new Pose2d(60,12,Math.toRadians(0));
+        startPose = new Pose2d(60,12,Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
         //if (opModeIsActive()) {
