@@ -206,8 +206,8 @@ public class RedRightV1 extends LinearOpMode {
         float x = 1000;
         float y = 1000;
         int position = 3;
-        float tempWidth = 20000;
-        float tempHeight = 20000;
+        float previousWidth = 20000;
+        float previousHeight = 20000;
         float smallestX = 0;
         float smallestY = 0;
         // Iterate through list and call a function to display info for each recognized object.
@@ -226,10 +226,11 @@ public class RedRightV1 extends LinearOpMode {
             // Display size
             // Display the size of detection boundary for the recognition
             telemetry.addData("- Size", JavaUtil.formatNumber(myTfodRecognition.getWidth(), 0) + " x " + JavaUtil.formatNumber(myTfodRecognition.getHeight(), 0));
-
-            if (myTfodRecognition.getWidth() < tempWidth){
-                tempWidth = myTfodRecognition.getWidth();
-                tempHeight = myTfodRecognition.getHeight();
+            float currentWidth = myTfodRecognition.getWidth();
+            float currentHeight = myTfodRecognition.getHeight();
+            if (currentWidth < previousWidth){
+                previousWidth = currentWidth;
+                previousHeight = currentHeight;
                 smallestX = x;
                 smallestY = y;
             }
@@ -249,6 +250,12 @@ public class RedRightV1 extends LinearOpMode {
         TrajectorySequence testingByTurning = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(36,12), setSpeed(10), setAccelatation())
                 .turn(Math.toRadians(-90))
+                //drop hex
+                //turn around
+                //move to board
+                //flip
+                //place hex
+                //park
                 .build();
         drive.followTrajectorySequence(testingByTurning);
     }
@@ -257,6 +264,12 @@ public class RedRightV1 extends LinearOpMode {
         TrajectorySequence testingByTurning = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(36,12), setSpeed(10), setAccelatation())
                 .turn(Math.toRadians(0))
+                //drop hex
+                //turn around
+                //move to board
+                //flip
+                //place hex
+                //park
                 .build();
         drive.followTrajectorySequence(testingByTurning);
     }
@@ -265,6 +278,12 @@ public class RedRightV1 extends LinearOpMode {
         TrajectorySequence testingByTurning = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(36,12), setSpeed(10), setAccelatation())
                 .turn(Math.toRadians(90))
+                //drop hex
+                //turn around
+                //move to board
+                //flip
+                //place hex
+                //park
                 .build();
         drive.followTrajectorySequence(testingByTurning);
     }
