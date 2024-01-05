@@ -66,10 +66,10 @@ public class RedRightV1 extends LinearOpMode {
         wristServo = hardwareMap.get(Servo.class,"WristServo");
         launchServo = hardwareMap.get(Servo.class,"plane");
 
-        clawLeftServo.setPosition(0.39);
-        clawRightServo.setPosition(0.55);
+        clawLeftServo.setPosition(0.00);
+        clawRightServo.setPosition(1.00);
         wristServo.setDirection(Servo.Direction.REVERSE);
-        wristServo.setPosition(0.23);
+        wristServo.setPosition(0.05);
         launchServo.setPosition(0.50);
         // a custom TFLite object detection model.
         USE_WEBCAM = true;
@@ -82,7 +82,7 @@ public class RedRightV1 extends LinearOpMode {
         waitForStart();
 
         //Set initial position
-        startPose = new Pose2d(60,12,Math.toRadians(90));
+        startPose = new Pose2d(-65,-15, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
 
         //if (opModeIsActive()) {
@@ -236,9 +236,9 @@ public class RedRightV1 extends LinearOpMode {
             }
 
         }
-        if (smallestX < 200) {
+        if (smallestX < 250) {
             position = 1;
-        } else if (smallestX < 700) {
+        } else if (smallestX >= 250 && smallestX < 700) {
             position = 2;
         }
         telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
@@ -247,9 +247,12 @@ public class RedRightV1 extends LinearOpMode {
     }
 
     private void doTaskForPosition1(){
-        TrajectorySequence testingByTurning = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(36,12), setSpeed(10), setAccelatation())
-                .turn(Math.toRadians(-90))
+        // Drop the hex
+        wristServo.setPosition(0.25);
+        TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
+                .lineTo(new Vector2d(-46,-15), setSpeed(10), setAccelatation())
+                .turn(Math.toRadians(45))
+                .lineTo(new Vector2d(-40,-11), setSpeed(10), setAccelatation())
                 //drop hex
                 //turn around
                 //move to board
@@ -257,7 +260,56 @@ public class RedRightV1 extends LinearOpMode {
                 //place hex
                 //park
                 .build();
-        drive.followTrajectorySequence(testingByTurning);
+        drive.followTrajectorySequence(dropTheHex);
+        clawLeftServo.setPosition(0.35);
+        sleep(500);
+        wristServo.setPosition(0.20);
+        sleep(200);
+
+        //Go to board
+        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
+                .lineTo(new Vector2d(-46,-15), setSpeed(10), setAccelatation())
+                .turn(Math.toRadians(-135))
+                .lineTo(new Vector2d(-30,-44), setSpeed(10), setAccelatation())
+
+                //.splineToLinearHeading(new Pose2d(-30, -44),Math.toRadians(180))
+                .addTemporalMarker(0,()->{
+                    armMotor.setPower(1);
+                    armMotor.setTargetPosition(340);
+                    armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                //drop hex
+                //turn around
+                //move to board
+                //flip
+                //place hex  (340 ticks)
+                //park
+                .build();
+        drive.followTrajectorySequence(goToBoard);
+
+        sleep(300);
+        wristServo.setPosition(0.38);
+        sleep(200);
+        clawRightServo.setPosition(0.55);
+        sleep(100);
+
+        //parking
+        TrajectorySequence parking = drive.trajectorySequenceBuilder(dropTheHex.end())
+                .lineTo(new Vector2d(-46,-15), setSpeed(10), setAccelatation())
+                //.turn(Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(-30, -44),-90)
+                .addTemporalMarker(0,()->{
+                    armMotor.setTargetPosition(340);
+                    wristServo.setPosition(0.38);
+                })
+                //drop hex
+                //turn around
+                //move to board
+                //flip
+                //place hex  (340 ticks)
+                //park
+                .build();
+        //drive.followTrajectorySequence(goToBoard);
     }
 
     private void doTaskForPosition2(){
@@ -271,7 +323,7 @@ public class RedRightV1 extends LinearOpMode {
                 //place hex
                 //park
                 .build();
-        drive.followTrajectorySequence(testingByTurning);
+       // drive.followTrajectorySequence(testingByTurning);
     }
 
     private void doTaskForPosition3(){
@@ -285,7 +337,7 @@ public class RedRightV1 extends LinearOpMode {
                 //place hex
                 //park
                 .build();
-        drive.followTrajectorySequence(testingByTurning);
+        // drive.followTrajectorySequence(testingByTurning);
     }
 
     private TrajectoryVelocityConstraint setSpeed(int speed) {
