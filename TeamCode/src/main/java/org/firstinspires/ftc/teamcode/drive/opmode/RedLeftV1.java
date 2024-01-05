@@ -364,7 +364,7 @@ public class RedLeftV1 extends LinearOpMode {
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(-46, 33), setSpeed(10), setAccelatation())
                 .turn(Math.toRadians(-45))
-                .lineTo(new Vector2d(-34, 30), setSpeed(10), setAccelatation())
+                .lineTo(new Vector2d(-41, 28), setSpeed(10), setAccelatation())
                 .build();
         drive.followTrajectorySequence(dropTheHex);
         clawLeftServo.setPosition(0.35);
@@ -386,7 +386,7 @@ public class RedLeftV1 extends LinearOpMode {
         sleep(200);
 
         TrajectorySequence goToBoardLastLeg = drive.trajectorySequenceBuilder(goToBoard.end())
-                .lineTo(new Vector2d(-40, -52))
+                .lineTo(new Vector2d(-42, -52))
                 .build();
         drive.followTrajectorySequence(goToBoardLastLeg);
 
@@ -399,7 +399,7 @@ public class RedLeftV1 extends LinearOpMode {
         //parking
         TrajectorySequence parking = drive.trajectorySequenceBuilder(goToBoardLastLeg.end())
 
-                .lineTo(new Vector2d(-40, -48), setSpeed(20), setAccelatation())
+                .lineTo(new Vector2d(-42, -48), setSpeed(20), setAccelatation())
                 .addTemporalMarker(1, () -> {
                     wristServo.setPosition(0.05);
                     moveArm(500, 1);
