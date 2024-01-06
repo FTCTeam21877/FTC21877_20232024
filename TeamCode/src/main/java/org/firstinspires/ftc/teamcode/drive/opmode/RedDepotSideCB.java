@@ -76,7 +76,7 @@ public class RedDepotSideCB extends LinearOpMode {
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch Play to start OpMode");
         telemetry.update();
-        waitForStart();
+
         List<Recognition> myTfodRecognitions = null;
         while (true) {
             myTfodRecognitions = myTfodProcessor.getRecognitions();
@@ -90,12 +90,12 @@ public class RedDepotSideCB extends LinearOpMode {
         int position = getPosition(myTfodRecognitions);
         //Test position
         int degree = 0;
-
+        waitForStart();
         Boolean leftSide =true;
         Boolean middle = false;
-        if(leftSide){
+        if(position == 1){
             leftSide(drive,startPose);
-        }else if(middle){
+        }else if(position == 2){
             middle(drive,startPose);
         }else{
             right(drive,startPose);
@@ -346,15 +346,17 @@ public class RedDepotSideCB extends LinearOpMode {
                 smallestX = x;
                 smallestY = y;
             }
+            float left = myTfodRecognition.getLeft();
+            if (left < 500) {
+                position = 1;
+            } else if (left >= 250 && left < 1200) {
+                position = 2;
+            }
+            telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
+            telemetry.update();
+        }
 
-        }
-        if (smallestX < 250) {
-            position = 1;
-        } else if (smallestX >= 250 && smallestX < 700) {
-            position = 2;
-        }
-        telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
-        //telemetry.update();
+
         return position;
     }
 }
