@@ -316,14 +316,16 @@ public class RedLeftV1 extends LinearOpMode {
                 .build();
         drive.followTrajectorySequence(dropTheHex);
         clawLeftServo.setPosition(0.35);
-        sleep(500);
-        wristServo.setPosition(0.15);
         sleep(200);
-        moveArm(100,1);
+        moveArm(0,1);
+        sleep(200);
+        wristServo.setPosition(0.03);
+        sleep(200);
 
         //Go to board
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
-                .lineTo(new Vector2d(-15, 33))
+                .lineTo(new Vector2d(-37, 52), setSpeed(10), setAccelatation())
+                .lineTo(new Vector2d(-15, 52))
                 .turn(Math.toRadians(-90))
                 .lineTo(new Vector2d(-15, -24))
                 .build();
