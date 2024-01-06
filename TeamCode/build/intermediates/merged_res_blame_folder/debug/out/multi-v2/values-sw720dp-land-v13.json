@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "org.firstinspires.ftc.teamcode.TeamCode-mergeDebugResources-18:/values-sw720dp-land-v13/values-sw720dp-land-v13.xml",
+            "outputFile": "org.firstinspires.ftc.teamcode.TeamCode-mergeDebugResources-4:/values-sw720dp-land-v13/values-sw720dp-land-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\anilk\\Downloads\\2023-2024\\road-runner-quickstart-quickstart1\\road-runner-quickstart-quickstart1\\FtcRobotController\\build\\intermediates\\packaged_res\\debug\\values-sw720dp-land-v13\\values-sw720dp-land-v13.xml",
+                    "source": "C:\\21877\\FTC22-23\\FTC21877_20232024\\FtcRobotController\\build\\intermediates\\packaged_res\\debug\\values-sw720dp-land-v13\\values-sw720dp-land-v13.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
