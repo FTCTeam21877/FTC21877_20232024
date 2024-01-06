@@ -274,11 +274,12 @@ public class BlueRightV1 extends LinearOpMode {
                 .turn(Math.toRadians(-45))
                 .lineTo(new Vector2d(15, 33), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(90))
-                .lineTo(new Vector2d(15, -24), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(15, -42), setSpeed(30), setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
         wristServo.setPosition(0.20);
+        sleep(5000);
         moveArm(320, 1);
         sleep(100);
 
@@ -335,10 +336,11 @@ public class BlueRightV1 extends LinearOpMode {
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(priorToBoard.end())
                 //.lineTo(new Vector2d(15, 33), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(90))
-                .lineTo(new Vector2d(13, -24), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(13, -42), setSpeed(30), setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
+        sleep(5000);
         moveArm(320, 1);
         sleep(100);
 
@@ -389,7 +391,7 @@ public class BlueRightV1 extends LinearOpMode {
                 .turn(Math.toRadians(45))
                 .lineTo(new Vector2d(14, 33))
                 .turn(Math.toRadians(90))
-                .lineTo(new Vector2d(14, -24))
+                .lineTo(new Vector2d(14, -42))
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
