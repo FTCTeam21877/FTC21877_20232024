@@ -73,7 +73,6 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch Play to start OpMode");
         telemetry.update();
-        waitForStart();
         List<Recognition> myTfodRecognitions = null;
         while (true) {
             myTfodRecognitions = myTfodProcessor.getRecognitions();
@@ -88,12 +87,12 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         //Test position
         int degree = 0;
 
-
-        Boolean leftSide = true;
-        Boolean middle = false;
-        if(leftSide){
+        telemetry.addData("what opject",position);
+        telemetry.update();
+        waitForStart();
+        if(position==1){
             leftSide(drive,startPose);
-        }else if(middle){
+        }else if(position==2){
             middle(drive,startPose);
         }else{
             right(drive,startPose);
@@ -342,10 +341,12 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
             }
 
         }
-        if (smallestX < 250) {
-            position = 1;
-        } else if (smallestX >= 250 && smallestX < 700) {
+        if (smallestX >300) {
+            position = 3;
+        } else if (smallestX >= 250 && smallestX < 300) {
             position = 2;
+        } else{
+            position = 1;
         }
         telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
         //telemetry.update();

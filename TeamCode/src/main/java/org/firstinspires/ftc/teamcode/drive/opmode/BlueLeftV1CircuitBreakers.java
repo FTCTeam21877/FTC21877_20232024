@@ -18,26 +18,26 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "RedDepotSideCircuitBreakers")
-public class RedDepotSideCB extends LinearOpMode {
+@Autonomous(name = "BlueLeftV1CircuitBreakers")
+public class BlueLeftV1CircuitBreakers extends LinearOpMode {
     //ARNAV KIRSHU PRANAV
     private DcMotor LeftLinearSlide;
+    boolean USE_WEBCAM;
+
     private DcMotor RightLinearSlide;
     private DcMotor LeftBack;
     private DcMotor LeftFront;
-
-    boolean USE_WEBCAM;
     private Servo BoxWrist;
     private Servo LeftBox;
     private Servo RightBox;
+    TfodProcessor myTfodProcessor;
+
     private Servo DroneLauncber;
     private DcMotor Intake;
     private DcMotor RightFront;
     private DcMotor RightBack;
-
     VisionPortal myVisionPortal;
 
-    TfodProcessor myTfodProcessor;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -64,38 +64,38 @@ public class RedDepotSideCB extends LinearOpMode {
         RightBox.setPosition(0.96);
         DroneLauncber.setPosition(0.32);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(-65,34, Math.toRadians(0));
-
-
-
+        Pose2d startPose = new Pose2d(65,-34, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
         USE_WEBCAM = true;
         // Initialize TFOD before waitForStart.
-        initTfod();
-        // Wait for the match to begin.
-        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch Play to start OpMode");
-        telemetry.update();
+//        initTfod();
+//        // Wait for the match to begin.
+//        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+//        telemetry.addData(">", "Touch Play to start OpMode");
+//        telemetry.update();
+//        List<Recognition> myTfodRecognitions = null;
+//        while (true) {
+//            myTfodRecognitions = myTfodProcessor.getRecognitions();
+//            int noOfObjects = myTfodRecognitions.size();
+//            if (noOfObjects > 0) {
+//                break;
+//            }
+//            sleep(1000);
+//            telemetry.addLine("Waiting to detect");
+//        }
+//        int position = getPosition(myTfodRecognitions);
+//        //Test position
+//        int degree = 0;
+//
+//        telemetry.addData("what opject",position);
+//        telemetry.update();
         waitForStart();
-        List<Recognition> myTfodRecognitions = null;
-        while (true) {
-            myTfodRecognitions = myTfodProcessor.getRecognitions();
-            int noOfObjects = myTfodRecognitions.size();
-            if (noOfObjects > 0) {
-                break;
-            }
-            sleep(1000);
-            telemetry.addLine("Waiting to detect");
+        boolean leftTrue = false;
+        boolean middleTrue = false;
+        if(leftTrue){
+            left(drive,startPose);
         }
-        int position = getPosition(myTfodRecognitions);
-        //Test position
-        int degree = 0;
-
-        Boolean leftSide =true;
-        Boolean middle = false;
-        if(leftSide){
-            leftSide(drive,startPose);
-        }else if(middle){
+        else if(middleTrue){
             middle(drive,startPose);
         }else{
             right(drive,startPose);
@@ -103,33 +103,39 @@ public class RedDepotSideCB extends LinearOpMode {
 
     }
 
-    private void leftSide(SampleMecanumDrive drive, Pose2d startPose) {
+    private void left(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-27, 30, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(47, -52, Math.toRadians(150)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
         Intake.setPower(.5);
         sleep(800);
         Intake.setPower(0);
-        TrajectorySequence goToStartBridge = drive.trajectorySequenceBuilder(goToDropingPose.end())
-                .lineTo(new Vector2d(-12,30))
-                .lineTo(new Vector2d(-12,-48))
-                .lineTo(new Vector2d(-40,-57))
+        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDropingPose.end())
+                .lineToLinearHeading(new Pose2d(45, -71, Math.toRadians(87)))
                 .build();
-        drive.followTrajectorySequence(goToStartBridge);
+        drive.followTrajectorySequence(goToBoard);
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
-        changingLinearSlides(1500,0.8,true, true);
+        changingLinearSlides(1300,0.8,true, true);
 
-        resetStuff();
+
+
+        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
+                .strafeRight(20)
+                .addTemporalMarker(0.8, () -> {
+                    resetStuff();
+                })
+                .build();
+        drive.followTrajectorySequence(strafeRight);
 
         telemetry.addData("Left  Slide Position", LeftLinearSlide.getCurrentPosition());
         telemetry.update();
     }
     private void middle(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-14, 29, Math.toRadians(155)))
+                .lineTo(new Vector2d(39,-32))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
@@ -137,29 +143,32 @@ public class RedDepotSideCB extends LinearOpMode {
         sleep(800);
         Intake.setPower(0);
 
-        TrajectorySequence splineToTruss = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(-12, 0, Math.toRadians(90)))
-                .build();
-        drive.followTrajectorySequence(splineToTruss);
-        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(splineToTruss.end())
-                .lineTo(new Vector2d(-12,-48))
-                .lineTo(new Vector2d(-40,-57))
+        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
+                .lineToLinearHeading(new Pose2d(40, -70, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
-        changingLinearSlides(1500,0.8,true, true);
+        changingLinearSlides(1300,0.8,true, true);
 
-        resetStuff();
+
+
+        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
+                .strafeRight(25)
+                .addTemporalMarker(0.5, () -> {
+                    resetStuff();
+                })
+                .build();
+        drive.followTrajectorySequence(strafeRight);
 
         telemetry.addData("Left  Slide Position", LeftLinearSlide.getCurrentPosition());
         telemetry.update();
     }
     private void right(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-40, 29, Math.toRadians(-40)))
+                .lineToLinearHeading(new Pose2d(43, -29, Math.toRadians(143)))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
@@ -167,37 +176,27 @@ public class RedDepotSideCB extends LinearOpMode {
         sleep(800);
         Intake.setPower(0);
 
-        TrajectorySequence goInFrontOfTheTruss = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(-47, 30, Math.toRadians(0)))
-                .build();
-        drive.followTrajectorySequence(goInFrontOfTheTruss);
-
-        TrajectorySequence goInFrontOfTheTruss2 = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(-14, 30, Math.toRadians(90)))
-                .build();
-        drive.followTrajectorySequence(goInFrontOfTheTruss2);
-
-        TrajectorySequence splineToTruss = drive.trajectorySequenceBuilder(goInFrontOfTheTruss2.end())
-                .lineToLinearHeading(new Pose2d(-12, 0, Math.toRadians(90)))
-                .build();
-        drive.followTrajectorySequence(splineToTruss);
-        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(splineToTruss.end())
-                .lineTo(new Vector2d(-12,-48))
-                .lineTo(new Vector2d(-40,-57))
+        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
+                .lineToLinearHeading(new Pose2d(32, -71, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
-        changingLinearSlides(1500,0.8,true, true);
+        changingLinearSlides(1300,0.8,true, true);
 
-        resetStuff();
+        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
+                .strafeRight(33)
+                .addTemporalMarker(0.5, () -> {
+                    resetStuff();
+                })
+                .build();
+        drive.followTrajectorySequence(strafeRight);
 
         telemetry.addData("Left  Slide Position", LeftLinearSlide.getCurrentPosition());
         telemetry.update();
     }
-
 
 
     private void changingLinearSlides(int ticks, double power, boolean openWrist, boolean openFlappers){
@@ -231,10 +230,8 @@ public class RedDepotSideCB extends LinearOpMode {
     }
     private void resetStuff(){
         BoxWrist.setPosition(0.14);
-        sleep(1000);
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
-        sleep(1000);
 
 
         LeftLinearSlide.setTargetPosition(0);
@@ -243,13 +240,12 @@ public class RedDepotSideCB extends LinearOpMode {
         RightLinearSlide.setTargetPosition(0);
         RightLinearSlide.setPower(-0.8);
         RightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        sleep(1000);
+        sleep(150);
 
 
 
 
     }
-
     private void initTfod() {
         TfodProcessor.Builder myTfodProcessorBuilder;
         VisionPortal.Builder myVisionPortalBuilder;
@@ -257,9 +253,9 @@ public class RedDepotSideCB extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_21877_RedCup.tflite");
+        myTfodProcessorBuilder.setModelFileName("model_21877_BlueCup.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
-        myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedCup"));
+        myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("BlueCup"));
         // Set the aspect ratio for the images used when the model was created.
         myTfodProcessorBuilder.setModelAspectRatio(16 / 9);
         // Create a TfodProcessor by calling build.
@@ -348,13 +344,18 @@ public class RedDepotSideCB extends LinearOpMode {
             }
 
         }
-        if (smallestX < 250) {
-            position = 1;
-        } else if (smallestX >= 250 && smallestX < 700) {
+        if (smallestX >300) {
+            position = 3;
+        } else if (smallestX >= 250 && smallestX < 300) {
             position = 2;
+        } else{
+            position = 1;
         }
         telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
         //telemetry.update();
         return position;
     }
+
+
+
 }
