@@ -22,7 +22,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "BlueRightV1")
+@Autonomous(name = "BlueRightV1", preselectTeleOp = "tele op final")
 public class BlueRightV1 extends LinearOpMode {
 
     boolean USE_WEBCAM;

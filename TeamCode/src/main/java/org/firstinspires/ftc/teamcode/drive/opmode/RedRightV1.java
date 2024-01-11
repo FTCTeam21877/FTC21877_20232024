@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,7 +21,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
-@Autonomous(name = "RedRightV1")
+@Autonomous(name = "RedRightV1", preselectTeleOp = "tele op final")
 public class RedRightV1 extends LinearOpMode {
 
     boolean USE_WEBCAM;
@@ -272,7 +271,7 @@ public class RedRightV1 extends LinearOpMode {
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
                 .lineTo(new Vector2d(-46, -15), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(-135))
-                .lineTo(new Vector2d(-30, -52))
+                .lineTo(new Vector2d(-28.5, -52))
                 //.splineToLinearHeading(new Pose2d(-30, -44),Math.toRadians(180))
                 .addTemporalMarker(2, () -> {
                     moveArm(340, 1);

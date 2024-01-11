@@ -22,7 +22,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "BlueLeftV1")
+@Autonomous(name = "BlueLeftV1", preselectTeleOp = "tele op final")
 public class BlueLeftV1 extends LinearOpMode {
 
     boolean USE_WEBCAM;
@@ -272,7 +272,7 @@ public class BlueLeftV1 extends LinearOpMode {
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
                 .lineTo(new Vector2d(46, -13), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(45))
-                .lineTo(new Vector2d(41.5, -49), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(41.5, -46.5), setSpeed(30), setAccelatation())
                 //.splineToLinearHeading(new Pose2d(-30, -44),Math.toRadians(180))
                 .addTemporalMarker(1, () -> {
                     moveArm(320, 1);
@@ -357,7 +357,7 @@ public class BlueLeftV1 extends LinearOpMode {
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(46, -13), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(-45))
-                .lineTo(new Vector2d(41, -8), setSpeed(20), setAccelatation())
+                .lineTo(new Vector2d(42, -9), setSpeed(20), setAccelatation())
                 .build();
         drive.followTrajectorySequence(dropTheHex);
         clawRightServo.setPosition(0.55);
@@ -369,7 +369,7 @@ public class BlueLeftV1 extends LinearOpMode {
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
                 .lineTo(new Vector2d(46, -13), setSpeed(20), setAccelatation())
                 .turn(Math.toRadians(135))
-                .lineTo(new Vector2d(29, -49))
+                .lineTo(new Vector2d(29, -47.5))
                 //.splineToLinearHeading(new Pose2d(-30, -44),Math.toRadians(180))
                 .addTemporalMarker(1, () -> {
                     moveArm(320, 1);

@@ -22,7 +22,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "RedLeftV1")
+@Autonomous(name = "RedLeftV1", preselectTeleOp = "tele op final")
 public class RedLeftV1 extends LinearOpMode {
 
     boolean USE_WEBCAM;
@@ -148,7 +148,7 @@ public class RedLeftV1 extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_21877_RedCup.tflite");
+        myTfodProcessorBuilder.setModelFileName("model_21877_RedCupOld.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedCup"));
         // Set the aspect ratio for the images used when the model was created.
@@ -283,7 +283,7 @@ public class RedLeftV1 extends LinearOpMode {
         sleep(300);
 
         TrajectorySequence goToBoardLastLeg = drive.trajectorySequenceBuilder(goToBoard.end())
-                .lineTo(new Vector2d(-30, -52))
+                .lineTo(new Vector2d(-30, -49))
                 .build();
         drive.followTrajectorySequence(goToBoardLastLeg);
 
