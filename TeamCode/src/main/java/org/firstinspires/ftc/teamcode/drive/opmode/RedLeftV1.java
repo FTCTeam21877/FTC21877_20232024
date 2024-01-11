@@ -104,7 +104,7 @@ public class RedLeftV1 extends LinearOpMode {
             }*/
             //Wait until object is detected
             List<Recognition> myTfodRecognitions = null;
-            int maxWait = 4000;
+            int maxWait = 4;
             int totalWait = 0;
             while (true) {
                 myTfodRecognitions = myTfodProcessor.getRecognitions();
@@ -112,9 +112,9 @@ public class RedLeftV1 extends LinearOpMode {
                 if (noOfObjects > 0 || totalWait > maxWait) {
                     break;
                 }
-                sleep(1000);
+                sleep(100);
                 telemetry.addLine("Waiting to detect");
-                totalWait +=1000;
+                totalWait +=1;
             }
             int position = getPosition(myTfodRecognitions);
             //Test position
