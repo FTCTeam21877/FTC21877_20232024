@@ -1297,11 +1297,11 @@ int raw ss_r2d2_up 0x7f0d001a
 int raw ss_roger_roger 0x7f0d001b
 int raw ss_siren 0x7f0d001c
 int raw ss_wookie 0x7f0d001d
-int raw teleopfinal 0x7f0d0022
-int raw texture_fragment_shader 0x7f0d001e
-int raw texture_vertex_shader 0x7f0d001f
-int raw warningmessage 0x7f0d0020
-int raw zxing_beep 0x7f0d0021
+int raw teleopfinal 0x7f0d001e
+int raw texture_fragment_shader 0x7f0d001f
+int raw texture_vertex_shader 0x7f0d0020
+int raw warningmessage 0x7f0d0021
+int raw zxing_beep 0x7f0d0022
 int string abc_action_bar_home_description 0x7f0e0000
 int string abc_action_bar_up_description 0x7f0e0001
 int string abc_action_menu_overflow_description 0x7f0e0002
