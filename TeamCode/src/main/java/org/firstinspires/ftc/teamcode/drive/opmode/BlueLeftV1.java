@@ -104,7 +104,7 @@ public class BlueLeftV1 extends LinearOpMode {
             }*/
             //Wait until object is detected
             List<Recognition> myTfodRecognitions = null;
-            int maxWait = 4000;
+            int maxWait = 800;
             int totalWait = 0;
             while (true) {
                 myTfodRecognitions = myTfodProcessor.getRecognitions();
@@ -112,9 +112,10 @@ public class BlueLeftV1 extends LinearOpMode {
                 if (noOfObjects > 0 || totalWait > maxWait) {
                     break;
                 }
-                sleep(1000);
+                sleep(200);
                 telemetry.addLine("Waiting to detect");
-                totalWait +=1000;
+                telemetry.update();
+                totalWait +=200;
             }
             int position = getPosition(myTfodRecognitions);
             //Test position
@@ -307,18 +308,17 @@ public class BlueLeftV1 extends LinearOpMode {
         // Drop the hex
         wristServo.setPosition(0.25);
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(37, -13), setSpeed(30), setAccelatation())
-
+                .lineTo(new Vector2d(37, -13))
                 .build();
         drive.followTrajectorySequence(dropTheHex);
         clawRightServo.setPosition(0.55);
-        sleep(500);
+        //sleep(500);
         wristServo.setPosition(0.20);
         sleep(200);
 
         //Go to board
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
-                .lineTo(new Vector2d(42, -13), setSpeed(10), setAccelatation())
+                .lineTo(new Vector2d(42, -13))
                 .turn(Math.toRadians(90))
                 .lineTo(new Vector2d(36, -49))
                 //.splineToLinearHeading(new Pose2d(-30, -44),Math.toRadians(180))
@@ -338,11 +338,12 @@ public class BlueLeftV1 extends LinearOpMode {
 
         //parking
         TrajectorySequence parking = drive.trajectorySequenceBuilder(goToBoard.end())
-                .lineTo(new Vector2d(36, -45), setSpeed(20), setAccelatation())
-                .addTemporalMarker(1, () -> {
+                .lineTo(new Vector2d(36, -45))
+                .addTemporalMarker(0.5, () -> {
                     wristServo.setPosition(0.05);
                     moveArm(500, 1);
                 })
+                //.turn(Math.toRadians(180))
                 .lineTo(new Vector2d(60, -45), setSpeed(40), setAccelatation())
                 //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();

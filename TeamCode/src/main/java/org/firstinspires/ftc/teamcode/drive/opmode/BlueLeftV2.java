@@ -116,8 +116,8 @@ public class BlueLeftV2 extends LinearOpMode {
                 telemetry.addLine("Waiting to detect");
                 totalWait +=200;
             }
-            //int position = getPosition(myTfodRecognitions);
-        int position =2;
+            int position = getPosition(myTfodRecognitions);
+        //int position =2;
             //Test position
             int degree = 0;
             if (position == 1) {
@@ -149,7 +149,7 @@ public class BlueLeftV2 extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_21877_BlueCup.tflite");
+        myTfodProcessorBuilder.setModelFileName("model_21877_BlueCupWL.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("BlueCup"));
         // Set the aspect ratio for the images used when the model was created.
