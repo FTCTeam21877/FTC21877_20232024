@@ -27,7 +27,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "BlueRightV1")
+@Autonomous(name = "SensorTestJava")
 public class SensorTest extends LinearOpMode {
 
     boolean USE_WEBCAM;

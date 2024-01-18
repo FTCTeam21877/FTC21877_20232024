@@ -352,7 +352,7 @@ public class BlueLeftV2 extends LinearOpMode {
                 .addTemporalMarker(1.5, () -> {
                     wristServo.setPosition(0.28);
                 })
-                .lineTo(new Vector2d(40,56.5),setSpeed(20),setAccelatation())
+                .lineTo(new Vector2d(39,56.5),setSpeed(20),setAccelatation())
                 //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();
         drive.followTrajectorySequence(goToStack);
