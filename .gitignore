@@ -30,3 +30,4 @@ replay_pid*
 *.dex
 *.bin
 *.lock
+*TeamCode\build*
