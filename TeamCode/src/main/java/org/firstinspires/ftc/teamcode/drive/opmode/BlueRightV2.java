@@ -82,7 +82,7 @@ public class BlueRightV2 extends LinearOpMode {
         waitForStart();
 
         //Set initial position
-        startPose = new Pose2d(65,33, Math.toRadians(180));
+        startPose = new Pose2d(65,37.5, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
 
         //if (opModeIsActive()) {
@@ -314,23 +314,26 @@ public class BlueRightV2 extends LinearOpMode {
         // Drop the hex
         wristServo.setPosition(0.25);
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(37.5, 33), setSpeed(20), setAccelatation())
+                .lineTo(new Vector2d(37.5, 37.5))
                 .build();
         drive.followTrajectorySequence(dropTheHex);
         clawRightServo.setPosition(0.5);
-        sleep(200);
-        moveArm(0,1);
-        sleep(200);
-        wristServo.setPosition(0.15);
-        sleep(200);
+        //sleep(200);
+        moveViperslides(225,1);
+        sleep(300);
+
+        wristServo.setPosition(0.27);
+        //wristServo.setPosition(0.15);
+        //sleep(200);
 
         //Go to board
         TrajectorySequence priorToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
-                .lineTo(new Vector2d(40.5, 33), setSpeed(20), setAccelatation())
-                .lineToLinearHeading(new Pose2d(35.5, 53,Math.toRadians(90)), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(45.5, 37.5))
+                .lineToLinearHeading(new Pose2d(42.5, 54, Math.toRadians(110)), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(39.25,59), setSpeed(30), setAccelatation())
                 .addTemporalMarker(0,()->{
-                    moveViperslides(125,1);
-                    wristServo.setPosition(0.30);
+                    //moveViperslides(125,1);
+                    //wristServo.setPosition(0.30);
                 })
                 //.lineTo(new Vector2d(35.5,53))
                 //.turn(Math.toRadians(-90))
@@ -338,21 +341,23 @@ public class BlueRightV2 extends LinearOpMode {
                 //.lineTo(new Vector2d(15, 33), setSpeed(30), setAccelatation())
                 .build();
         drive.followTrajectorySequence(priorToBoard);
+        sleep(200);
         clawRightServo.setPosition(1);
-        sleep(400);
+        sleep(300);
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(priorToBoard.end())
-                .turn(Math.toRadians(90))
+                .lineTo(new Vector2d(42.5, 54))
+                //.turn(Math.toRadians(90))
                 .addTemporalMarker(0.5,()->{
                     moveViperslides(0,1);
                 })
-                .lineTo(new Vector2d(13, 50), setSpeed(30), setAccelatation())
+                .lineToLinearHeading(new Pose2d(13, 49, Math.toRadians(180)), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(90))
                 .lineTo(new Vector2d(13, -42), setSpeed(30), setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
-        sleep(5000);
+        //sleep(5000);
         moveArm(320, 1);
         sleep(100);
 
@@ -381,6 +386,8 @@ public class BlueRightV2 extends LinearOpMode {
                 .build();
         drive.followTrajectorySequence(parking);
         moveArm(0, 1);
+
+
     }
 
 
