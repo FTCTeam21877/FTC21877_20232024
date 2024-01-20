@@ -317,24 +317,36 @@ public class BlueRightV2 extends LinearOpMode {
                 .lineTo(new Vector2d(37.5, 33), setSpeed(20), setAccelatation())
                 .build();
         drive.followTrajectorySequence(dropTheHex);
-        clawRightServo.setPosition(0.55);
+        clawRightServo.setPosition(0.5);
         sleep(200);
         moveArm(0,1);
         sleep(200);
-        wristServo.setPosition(0.03);
+        wristServo.setPosition(0.15);
         sleep(200);
 
         //Go to board
         TrajectorySequence priorToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
-                .lineTo(new Vector2d(37.5, 52), setSpeed(30), setAccelatation())
-                .lineTo(new Vector2d(13, 52), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(40.5, 33), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(35.5, 53,Math.toRadians(90)), setSpeed(30), setAccelatation())
+                .addTemporalMarker(0,()->{
+                    moveViperslides(125,1);
+                    wristServo.setPosition(0.30);
+                })
+                //.lineTo(new Vector2d(35.5,53))
+                //.turn(Math.toRadians(-90))
+                //.lineTo(new Vector2d(13, 52), setSpeed(30), setAccelatation())
                 //.lineTo(new Vector2d(15, 33), setSpeed(30), setAccelatation())
                 .build();
         drive.followTrajectorySequence(priorToBoard);
-        //wristServo.setPosition(0.03);
+        clawRightServo.setPosition(1);
+        sleep(400);
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(priorToBoard.end())
-                //.lineTo(new Vector2d(15, 33), setSpeed(30), setAccelatation())
+                .turn(Math.toRadians(90))
+                .addTemporalMarker(0.5,()->{
+                    moveViperslides(0,1);
+                })
+                .lineTo(new Vector2d(13, 50), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(90))
                 .lineTo(new Vector2d(13, -42), setSpeed(30), setAccelatation())
                 .build();
@@ -352,6 +364,7 @@ public class BlueRightV2 extends LinearOpMode {
         wristServo.setPosition(0.38);
         sleep(300);
         clawLeftServo.setPosition(0.35);
+        clawRightServo.setPosition(0.55);
         sleep(200);
 
 
@@ -440,5 +453,14 @@ public class BlueRightV2 extends LinearOpMode {
 
     }
 
+    private void moveViperslides(int targetPosition, double power) {
+        viperSlideLeftMotor.setPower(power);
+        viperSlideLeftMotor.setTargetPosition(targetPosition);
+        viperSlideLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        viperSlideRightMotor.setPower(power);
+        viperSlideRightMotor.setTargetPosition(targetPosition);
+        viperSlideRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    }
 
 }
