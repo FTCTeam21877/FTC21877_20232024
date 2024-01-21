@@ -109,13 +109,13 @@ public class SensorTest extends LinearOpMode {
         if (opModeIsActive()) {
             // Put run blocks here.
             while (opModeIsActive()) {
-                sleep(3000);
+                sleep(2000);
                 currentPose = start.end();
                 double x = currentPose.component1();
                 double y = currentPose.component2();
                 double distance = distanceSensor.getDistance(DistanceUnit.INCH);
                 telemetry.addData("Distance", distance);
-                if (distance < 36) {
+                if (distance < 24) {
                     telemetry.addLine("Turning -90");
                     TrajectorySequence turnSequence = drive.trajectorySequenceBuilder(start.end())
                             .turn(Math.toRadians(-90))
