@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -29,6 +32,7 @@ public class RedDepotSideCB extends LinearOpMode {
     boolean USE_WEBCAM;
     private Servo BoxWrist;
     private Servo LeftBox;
+    private Servo Dicky;
     private Servo RightBox;
     private Servo DroneLauncber;
     private DcMotor Intake;
@@ -52,6 +56,7 @@ public class RedDepotSideCB extends LinearOpMode {
         Intake = hardwareMap.get(DcMotor.class, "Intake");
         RightFront = hardwareMap.get(DcMotor.class, "RightFront");
         RightBack = hardwareMap.get(DcMotor.class, "RightBack");
+        Dicky = hardwareMap.get(Servo.class,"Dicky");
         LeftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LeftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -64,6 +69,7 @@ public class RedDepotSideCB extends LinearOpMode {
         RightBox.setPosition(0.96);
         DroneLauncber.setPosition(0.32);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Dicky.setPosition(0);
         Pose2d startPose = new Pose2d(-65,34, Math.toRadians(0));
 
 
@@ -81,7 +87,7 @@ public class RedDepotSideCB extends LinearOpMode {
         while (true) {
             myTfodRecognitions = myTfodProcessor.getRecognitions();
             int noOfObjects = myTfodRecognitions.size();
-            if (noOfObjects > 0) {
+            if (noOfObjects >= 0) {
                 break;
             }
             sleep(1000);
@@ -101,9 +107,11 @@ public class RedDepotSideCB extends LinearOpMode {
             right(drive,startPose);
         }
 
+
     }
 
     private void leftSide(SampleMecanumDrive drive, Pose2d startPose) {
+
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-27, 30, Math.toRadians(90)))
                 .build();
@@ -111,12 +119,30 @@ public class RedDepotSideCB extends LinearOpMode {
         Intake.setPower(.5);
         sleep(800);
         Intake.setPower(0);
+//        TrajectorySequence goToPickUpStack = drive.trajectorySequenceBuilder(goToDropingPose.end())
+//                .strafeRight(12)
+//                .lineTo(new Vector2d(-14,53),setSpeed(15),setAccelatation())
+//                .build();
+//        drive.followTrajectorySequence(goToPickUpStack);
+//        soft();
+//        TrajectorySequence pickUpExtra = drive.trajectorySequenceBuilder(goToPickUpStack.end())
+//                .back(6)
+//                .addTemporalMarker(1.5, () -> {
+//                    Dicky.setPosition(0);
+//                    Intake.setPower(-0.7);
+//                })
+//                .forward(8)
+//                .build();
+//        drive.followTrajectorySequence(pickUpExtra);
+
+
         TrajectorySequence goToStartBridge = drive.trajectorySequenceBuilder(goToDropingPose.end())
                 .lineTo(new Vector2d(-12,30))
                 .lineTo(new Vector2d(-12,-48))
                 .lineTo(new Vector2d(-40,-57))
                 .build();
         drive.followTrajectorySequence(goToStartBridge);
+
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
@@ -181,6 +207,7 @@ public class RedDepotSideCB extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-12, 0, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(splineToTruss);
+
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(splineToTruss.end())
                 .lineTo(new Vector2d(-12,-48))
                 .lineTo(new Vector2d(-40,-57))
@@ -257,7 +284,7 @@ public class RedDepotSideCB extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_21877_RedCup.tflite");
+        myTfodProcessorBuilder.setModelFileName("model_20240120_172231.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedCup"));
         // Set the aspect ratio for the images used when the model was created.
@@ -347,7 +374,8 @@ public class RedDepotSideCB extends LinearOpMode {
                 smallestY = y;
             }
             float left = myTfodRecognition.getLeft();
-            if (left < 500) {
+            telemetry.addData("- Left", JavaUtil.formatNumber(left, 0));
+            if (left < 250) {
                 position = 1;
             } else if (left >= 250 && left < 1200) {
                 position = 2;
@@ -357,6 +385,23 @@ public class RedDepotSideCB extends LinearOpMode {
         }
 
 
+
         return position;
+    }
+    private void soft(){
+        Dicky.setPosition(0.4);
+        sleep(100);
+    }
+    private void hard(){
+        Dicky.setPosition(0);
+        sleep(100);
+    }
+
+    private TrajectoryVelocityConstraint setSpeed(int speed) {
+        return SampleMecanumDrive.getVelocityConstraint(speed, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+    }
+
+    private TrajectoryAccelerationConstraint setAccelatation() {
+        return SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
     }
 }

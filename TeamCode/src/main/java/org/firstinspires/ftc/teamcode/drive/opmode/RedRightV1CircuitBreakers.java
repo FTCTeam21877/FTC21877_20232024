@@ -59,10 +59,10 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         LeftBack.setDirection(DcMotor.Direction.REVERSE);
         LeftFront.setDirection(DcMotor.Direction.REVERSE);
         RightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
-        BoxWrist.setPosition(0.14);
+        BoxWrist.setPosition(0.15);
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
-        DroneLauncber.setPosition(0.32);
+        DroneLauncber.setPosition(0.5);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(-65,-34, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
@@ -77,19 +77,23 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         while (true) {
             myTfodRecognitions = myTfodProcessor.getRecognitions();
             int noOfObjects = myTfodRecognitions.size();
-            if (noOfObjects > 0) {
+            if (noOfObjects >= 0) {
                 break;
             }
             sleep(1000);
             telemetry.addLine("Waiting to detect");
         }
-        int position = getPosition(myTfodRecognitions);
+        int position = -1;
         //Test position
         int degree = 0;
-
-        telemetry.addData("what opject",position);
-        telemetry.update();
         waitForStart();
+        while (position < 0) {
+            sleep(1000);
+            myTfodRecognitions = myTfodProcessor.getRecognitions();
+            telemetry.addData("what opjject", getPosition(myTfodRecognitions));
+            position = getPosition(myTfodRecognitions);
+            telemetry.update();
+        }
         if(position==1){
             leftSide(drive,startPose);
         }else if(position==2){
@@ -120,7 +124,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
 
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
-                .strafeLeft(20)
+                .lineTo(new Vector2d(-65,-65))
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
                 })
@@ -153,7 +157,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
 
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
-                .strafeLeft(25)
+                .lineTo(new Vector2d(-65,-65))
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
                 })
@@ -204,11 +208,11 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         RightLinearSlide.setPower(power);
         RightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if(openWrist) {
-            BoxWrist.setPosition(0.45);
+            BoxWrist.setPosition(0.42);
             sleep(1000);
         }
         else{
-            BoxWrist.setPosition(0.14);
+            BoxWrist.setPosition(0.15);
             sleep(1000);
         }
 
@@ -250,7 +254,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_21877_RedCup.tflite");
+        myTfodProcessorBuilder.setModelFileName("model_20240120_172231.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedCup"));
         // Set the aspect ratio for the images used when the model was created.
@@ -327,7 +331,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
             x = (myTfodRecognition.getLeft() + myTfodRecognition.getRight()) / 2;
             y = (myTfodRecognition.getTop() + myTfodRecognition.getBottom()) / 2;
             // Display the position of the center of the detection boundary for the recognition
-            telemetry.addData("- Position", JavaUtil.formatNumber(x, 0) + ", " + JavaUtil.formatNumber(y, 0));
+            telemetry.addData("- Camera Position", JavaUtil.formatNumber(x, 0) + ", " + JavaUtil.formatNumber(y, 0));
             // Display size
             // Display the size of detection boundary for the recognition
             telemetry.addData("- Size", JavaUtil.formatNumber(myTfodRecognition.getWidth(), 0) + " x " + JavaUtil.formatNumber(myTfodRecognition.getHeight(), 0));
@@ -341,15 +345,17 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
             }
 
         }
-        if (smallestX >300) {
-            position = 3;
-        } else if (smallestX >= 250 && smallestX < 300) {
+
+        telemetry.addData("- SmallestX", JavaUtil.formatNumber(smallestX, 0) );
+        if (smallestX > 150 && smallestX < 450) {
             position = 2;
+        } else if (smallestX >= 450) {
+            position = 3;
         } else{
             position = 1;
-        }
-        telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
-        //telemetry.update();
+        }//215 582
+        telemetry.addData("- Scoring Location", JavaUtil.formatNumber(smallestX, 0) );
+        telemetry.update();
         return position;
     }
 

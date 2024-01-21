@@ -273,7 +273,7 @@ public class BlueDepotSideCB extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_21877_RedCup.tflite");
+        myTfodProcessorBuilder.setModelFileName("model_20240120_172231.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedCup"));
         // Set the aspect ratio for the images used when the model was created.
