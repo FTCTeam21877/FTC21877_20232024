@@ -109,7 +109,6 @@ public class SensorTest extends LinearOpMode {
         if (opModeIsActive()) {
             // Put run blocks here.
             while (opModeIsActive()) {
-                sleep(2000);
                 currentPose = start.end();
                 double x = currentPose.component1();
                 double y = currentPose.component2();
@@ -131,7 +130,7 @@ public class SensorTest extends LinearOpMode {
                         .lineTo(getNewCoordinates(direction, start.end()), setSpeed(10), setAccelatation())
                         .build();
                 drive.followTrajectorySequence(dropTheHex);
-
+                start = dropTheHex;
                 telemetry.update();
             }
         }
