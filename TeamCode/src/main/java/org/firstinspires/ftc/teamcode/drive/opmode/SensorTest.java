@@ -91,17 +91,17 @@ public class SensorTest extends LinearOpMode {
 
         //Set initial position
         //Blue left
-        //startPose = new Pose2d(65, -13, Math.toRadians(180));
+        startPose = new Pose2d(65, -13, Math.toRadians(180));
         //Blue right
-        startPose = new Pose2d(65,33, Math.toRadians(180));
+        //startPose = new Pose2d(65,33, Math.toRadians(180));
 
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence start = drive.trajectorySequenceBuilder(startPose)
                 //Blue left
-                //.lineTo(new Vector2d(60, -12), setSpeed(10), setAccelatation())
+                .lineTo(new Vector2d(60, -12), setSpeed(10), setAccelatation())
                 //Blue right
-                .lineTo(new Vector2d(60, 36), setSpeed(10), setAccelatation())
+                //.lineTo(new Vector2d(60, 36), setSpeed(10), setAccelatation())
                 .build();
         drive.followTrajectorySequence(start);
         Direction direction = Direction.WEST;
