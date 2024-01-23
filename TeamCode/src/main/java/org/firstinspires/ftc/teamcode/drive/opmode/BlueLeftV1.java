@@ -82,7 +82,7 @@ public class BlueLeftV1 extends LinearOpMode {
         waitForStart();
 
         //Set initial position
-        startPose = new Pose2d(65,-13, Math.toRadians(180));
+        startPose = new Pose2d(65,-13.75, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
 
         //if (opModeIsActive()) {
@@ -259,9 +259,9 @@ public class BlueLeftV1 extends LinearOpMode {
         // Drop the hex
         wristServo.setPosition(0.25);
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(46, -13), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(44, -13.75), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(45))
-                .lineTo(new Vector2d(41, -18), setSpeed(10), setAccelatation())
+                .lineTo(new Vector2d(39.50, -18.25), setSpeed(10), setAccelatation())
                 .build();
         drive.followTrajectorySequence(dropTheHex);
         clawRightServo.setPosition(0.55);
@@ -271,9 +271,11 @@ public class BlueLeftV1 extends LinearOpMode {
 
         //Go to board
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
-                .lineTo(new Vector2d(46, -13), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(44, -13.75), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(45))
-                .lineTo(new Vector2d(41.5, -49), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(41.5, -48), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(41.5, -48.5), setSpeed(10), setAccelatation())
+
                 //.splineToLinearHeading(new Pose2d(-30, -44),Math.toRadians(180))
                 .addTemporalMarker(1, () -> {
                     moveArm(320, 1);
@@ -291,12 +293,12 @@ public class BlueLeftV1 extends LinearOpMode {
 
         //parking
         TrajectorySequence parking = drive.trajectorySequenceBuilder(goToBoard.end())
-                .lineTo(new Vector2d(41.5, -45), setSpeed(20), setAccelatation())
+                .lineTo(new Vector2d(41.5, -44), setSpeed(20), setAccelatation())
                 .addTemporalMarker(1, () -> {
                     wristServo.setPosition(0.05);
                     moveArm(500, 1);
                 })
-                .lineTo(new Vector2d(60, -45), setSpeed(40), setAccelatation())
+                .lineTo(new Vector2d(61, -44), setSpeed(40), setAccelatation())
                 //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();
         drive.followTrajectorySequence(parking);
@@ -308,7 +310,7 @@ public class BlueLeftV1 extends LinearOpMode {
         // Drop the hex
         wristServo.setPosition(0.25);
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(37, -13))
+                .lineTo(new Vector2d(38, -13), setSpeed(30), setAccelatation())
                 .build();
         drive.followTrajectorySequence(dropTheHex);
         clawRightServo.setPosition(0.55);
@@ -344,7 +346,7 @@ public class BlueLeftV1 extends LinearOpMode {
                     moveArm(500, 1);
                 })
                 //.turn(Math.toRadians(180))
-                .lineTo(new Vector2d(60, -45), setSpeed(40), setAccelatation())
+                .lineTo(new Vector2d(61, -45), setSpeed(40), setAccelatation())
                 //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();
         drive.followTrajectorySequence(parking);
@@ -358,7 +360,7 @@ public class BlueLeftV1 extends LinearOpMode {
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(46, -13), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(-45))
-                .lineTo(new Vector2d(41, -8), setSpeed(20), setAccelatation())
+                .lineTo(new Vector2d(42, -9), setSpeed(20), setAccelatation())
                 .build();
         drive.followTrajectorySequence(dropTheHex);
         clawRightServo.setPosition(0.55);
@@ -373,7 +375,7 @@ public class BlueLeftV1 extends LinearOpMode {
                 .lineTo(new Vector2d(29, -49))
                 //.splineToLinearHeading(new Pose2d(-30, -44),Math.toRadians(180))
                 .addTemporalMarker(1, () -> {
-                    moveArm(320, 1);
+                    moveArm(280, 1);
 
                 })
 
@@ -381,10 +383,10 @@ public class BlueLeftV1 extends LinearOpMode {
         drive.followTrajectorySequence(goToBoard);
 
         sleep(300);
-        wristServo.setPosition(0.38);
+        wristServo.setPosition(0.4);
         sleep(200);
         clawLeftServo.setPosition(0.35);
-        sleep(100);
+        sleep(200);
 
         //parking
         TrajectorySequence parking = drive.trajectorySequenceBuilder(goToBoard.end())
@@ -393,7 +395,9 @@ public class BlueLeftV1 extends LinearOpMode {
                     wristServo.setPosition(0.05);
                     moveArm(500, 1);
                 })
-                .lineTo(new Vector2d(60, -45), setSpeed(40), setAccelatation())
+                .lineTo(new Vector2d(61, -44), setSpeed(40), setAccelatation())
+                .lineTo(new Vector2d(61, -45), setSpeed(10), setAccelatation())
+
                 //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();
         drive.followTrajectorySequence(parking);
