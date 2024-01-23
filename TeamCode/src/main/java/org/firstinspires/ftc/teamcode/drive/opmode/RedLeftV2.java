@@ -82,11 +82,11 @@ public class RedLeftV2 extends LinearOpMode {
         waitForStart();
 
         //Set initial position
-        startPose = new Pose2d(-65,33, Math.toRadians(0));
+        startPose = new Pose2d(-65,37.5, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
 
         //if (opModeIsActive()) {
-            // Put run blocks here.
+        // Put run blocks here.
             /*while (opModeIsActive()) {
                 // Put loop blocks here.
                 telemetryTfod();
@@ -102,39 +102,39 @@ public class RedLeftV2 extends LinearOpMode {
                 // Share the CPU.
                 sleep(20);
             }*/
-            //Wait until object is detected
-            List<Recognition> myTfodRecognitions = null;
-            int maxWait = 4;
-            int totalWait = 0;
-            while (true) {
-                myTfodRecognitions = myTfodProcessor.getRecognitions();
-                int noOfObjects = myTfodRecognitions.size();
-                if (noOfObjects > 0 || totalWait > maxWait) {
-                    break;
-                }
-                sleep(100);
-                telemetry.addLine("Waiting to detect");
-                totalWait +=1;
+        //Wait until object is detected
+        List<Recognition> myTfodRecognitions = null;
+        int maxWait = 800;
+        int totalWait = 0;
+        while (true) {
+            myTfodRecognitions = myTfodProcessor.getRecognitions();
+            int noOfObjects = myTfodRecognitions.size();
+            if (noOfObjects > 0 || totalWait > maxWait) {
+                break;
             }
-            int position = getPosition(myTfodRecognitions);
-            //Test position
-            int degree = 0;
-            if (position == 1) {
-                //degree = -90;
-                doTaskForPosition1();
-            } else if (position == 2) {
-                //degree = 0;
-                doTaskForPosition2();
-            } else {
-                //degree = 90;
-                doTaskForPosition3();
-            }
+            sleep(200);
+            telemetry.addLine("Waiting to detect");
+            totalWait +=200;
+        }
+        int position = getPosition(myTfodRecognitions);
+        //Test position
+        int degree = 0;
+        if (position == 1) {
+            //degree = -90;
+            doTaskForPosition1();
+        } else if (position == 2) {
+            //degree = 0;
+            doTaskForPosition2();
+        } else {
+            //degree = 90;
+            doTaskForPosition3();
+        }
 
         telemetry.addData("Postion", JavaUtil.formatNumber(position,0));
 
         telemetry.addLine("Waiting before exiting");
-            telemetry.update();
-            sleep(10000);
+        telemetry.update();
+        sleep(10000);
         //}
     }
 
@@ -148,7 +148,7 @@ public class RedLeftV2 extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_21877_RedCup.tflite");
+        myTfodProcessorBuilder.setModelFileName("model_21877_RedCupWL.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedCup"));
         // Set the aspect ratio for the images used when the model was created.
@@ -258,37 +258,53 @@ public class RedLeftV2 extends LinearOpMode {
         // Drop the hex
         wristServo.setPosition(0.25);
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-46, 33), setSpeed(10), setAccelatation())
-                .turn(Math.toRadians(45))
-                .lineTo(new Vector2d(-40, 35), setSpeed(10), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-38, 39.5, Math.toRadians(45)), setSpeed(20), setAccelatation())
                 .build();
         drive.followTrajectorySequence(dropTheHex);
-        clawLeftServo.setPosition(0.35);
-        sleep(500);
-        wristServo.setPosition(0.03);
-        sleep(200);
+        clawRightServo.setPosition(0.5);
+        moveViperslides(225,1);
+        sleep(300);
+
+        wristServo.setPosition(0.27);
 
         //Go to board
-        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
-                .lineTo(new Vector2d(-44, 33), setSpeed(30), setAccelatation())
-                .turn(Math.toRadians(-45))
-                .lineTo(new Vector2d(-15, 33))
+        TrajectorySequence priorToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
+                .lineTo(new Vector2d(-45.5, 37.5))
+                .lineToLinearHeading(new Pose2d(-42.5, 54, Math.toRadians(70)), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(-39.5,58.75), setSpeed(30), setAccelatation())
+                .build();
+        drive.followTrajectorySequence(priorToBoard);
+        sleep(200);
+        clawRightServo.setPosition(1);
+        sleep(300);
+
+
+        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(priorToBoard.end())
+                .lineTo(new Vector2d(-42.5, 54))
+                //.turn(Math.toRadians(90))
+                .addTemporalMarker(0.5,()->{
+                    moveViperslides(0,1);
+                    wristServo.setPosition(0.03);
+                })
+                .lineToLinearHeading(new Pose2d(13, 49, Math.toRadians(180)))
                 .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-15, -42))
+                .lineTo(new Vector2d(-13, -42))
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
-        sleep(5000);
-        moveArm(340, 1);
-        sleep(300);
+        //sleep(5000);
+        wristServo.setPosition(0.27);
+        moveArm(320, 1);
+        sleep(200);
 
         TrajectorySequence goToBoardLastLeg = drive.trajectorySequenceBuilder(goToBoard.end())
-                .lineTo(new Vector2d(-30, -52))
+                .lineTo(new Vector2d(-42.5, -51))
                 .build();
         drive.followTrajectorySequence(goToBoardLastLeg);
 
         wristServo.setPosition(0.38);
-        sleep(200);
+        sleep(300);
+        clawLeftServo.setPosition(0.35);
         clawRightServo.setPosition(0.55);
         sleep(200);
 
@@ -296,53 +312,66 @@ public class RedLeftV2 extends LinearOpMode {
         //parking
         TrajectorySequence parking = drive.trajectorySequenceBuilder(goToBoardLastLeg.end())
 
-                .lineTo(new Vector2d(-30, -48), setSpeed(20), setAccelatation())
+                .lineTo(new Vector2d(-42, -45))
+                .lineTo(new Vector2d(-20, -45))
                 .addTemporalMarker(1, () -> {
                     wristServo.setPosition(0.05);
                     moveArm(500, 1);
                 })
-                //.lineTo(new Vector2d(-60, -48), setSpeed(40), setAccelatation())
-                //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();
         drive.followTrajectorySequence(parking);
         moveArm(0, 1);
-
     }
 
     private void doTaskForPosition2(){
         // Drop the hex
         wristServo.setPosition(0.25);
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-37, 33), setSpeed(10), setAccelatation())
+                .lineTo(new Vector2d(-37.5, 37.5))
                 .build();
         drive.followTrajectorySequence(dropTheHex);
-        clawLeftServo.setPosition(0.35);
-        sleep(200);
-        moveArm(0,1);
-        sleep(200);
-        wristServo.setPosition(0.03);
-        sleep(200);
+        clawRightServo.setPosition(0.5);
+        //sleep(200);
+        moveViperslides(225,1);
+        sleep(300);
+
+        wristServo.setPosition(0.27);
 
         //Go to board
-        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
-                .lineTo(new Vector2d(-37, 52), setSpeed(10), setAccelatation())
-                .lineTo(new Vector2d(-14, 52))
+        TrajectorySequence priorToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
+                .lineTo(new Vector2d(-45.5, 37.5))
+                .lineToLinearHeading(new Pose2d(-42.5, 54, Math.toRadians(70)), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(-39.25,59), setSpeed(30), setAccelatation())
+                .build();
+        drive.followTrajectorySequence(priorToBoard);
+        sleep(200);
+        clawRightServo.setPosition(1);
+        sleep(300);
+
+        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(priorToBoard.end())
+                .lineTo(new Vector2d(-42.5, 54))
+                //.turn(Math.toRadians(90))
+                .addTemporalMarker(0.5,()->{
+                    moveViperslides(0,1);
+                })
+                .lineToLinearHeading(new Pose2d(-13, 49, Math.toRadians(180)), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-14, -42))
+                .lineTo(new Vector2d(-13, -42), setSpeed(30), setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
-        sleep(5000);
-        moveArm(340, 1);
-        sleep(300);
+        //sleep(5000);
+        moveArm(320, 1);
+        sleep(100);
 
         TrajectorySequence goToBoardLastLeg = drive.trajectorySequenceBuilder(goToBoard.end())
-                .lineTo(new Vector2d(-34, -52))
+                .lineTo(new Vector2d(-35, -51), setSpeed(30), setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToBoardLastLeg);
 
         wristServo.setPosition(0.38);
         sleep(300);
+        clawLeftServo.setPosition(0.35);
         clawRightServo.setPosition(0.55);
         sleep(200);
 
@@ -350,53 +379,72 @@ public class RedLeftV2 extends LinearOpMode {
         //parking
         TrajectorySequence parking = drive.trajectorySequenceBuilder(goToBoardLastLeg.end())
 
-                .lineTo(new Vector2d(-34, -48), setSpeed(20), setAccelatation())
+                .lineTo(new Vector2d(-35, -45), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(-20, -45))
                 .addTemporalMarker(1, () -> {
                     wristServo.setPosition(0.05);
                     moveArm(500, 1);
                 })
-                //.lineTo(new Vector2d(-60, -48), setSpeed(40), setAccelatation())
-                //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();
         drive.followTrajectorySequence(parking);
         moveArm(0, 1);
     }
 
+
     private void doTaskForPosition3(){
         // Drop the hex
         wristServo.setPosition(0.25);
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-46, 33), setSpeed(10), setAccelatation())
-                .turn(Math.toRadians(-45))
-                .lineTo(new Vector2d(-41, 28), setSpeed(10), setAccelatation())
+                //.lineTo(new Vector2d(46, 41.5))
+                //.turn(Math.toRadians(45))
+                .lineToLinearHeading(new Pose2d(-38, 39.5, Math.toRadians(-45)), setSpeed(20), setAccelatation())
                 .build();
         drive.followTrajectorySequence(dropTheHex);
-        clawLeftServo.setPosition(0.35);
-        sleep(500);
-        wristServo.setPosition(0.03);
-        sleep(200);
+        clawRightServo.setPosition(0.5);
+        moveViperslides(225,1);
+        sleep(300);
+        wristServo.setPosition(0.27);
 
         //Go to board
-        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
-                .lineTo(new Vector2d(-46, 33), setSpeed(30), setAccelatation())
-                .turn(Math.toRadians(45))
-                .lineTo(new Vector2d(-15, 33))
+        TrajectorySequence priorToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
+                //.lineTo(new Vector2d(40, 37.5))
+                .lineToLinearHeading(new Pose2d(-40, 37.5, Math.toRadians(0)), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(-20,37.5))
+                .lineToLinearHeading(new Pose2d(-18.5, 54, Math.toRadians(70)), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(-16.25,58.75), setSpeed(30), setAccelatation())
+                .build();
+        drive.followTrajectorySequence(priorToBoard);
+        sleep(200);
+        clawRightServo.setPosition(1);
+        sleep(300);
+
+
+        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(priorToBoard.end())
+                .lineTo(new Vector2d(-18.5, 54))
+                .addTemporalMarker(0.5,()->{
+                    moveViperslides(0,1);
+                    wristServo.setPosition(0.03);
+                })
+                .lineToLinearHeading(new Pose2d(-13, 49, Math.toRadians(0)))
                 .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-15, -42))
+                .lineTo(new Vector2d(-13, -42))
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
-        sleep(5000);
-        moveArm(340, 1);
-        sleep(300);
+        //sleep(5000);
+        wristServo.setPosition(0.27);
+        moveArm(280, 1);
+        sleep(200);
 
         TrajectorySequence goToBoardLastLeg = drive.trajectorySequenceBuilder(goToBoard.end())
-                .lineTo(new Vector2d(-42, -52))
+                .lineTo(new Vector2d(-32, -42))
+                .lineTo(new Vector2d(-32, -48))
                 .build();
         drive.followTrajectorySequence(goToBoardLastLeg);
 
         wristServo.setPosition(0.38);
-        sleep(200);
+        sleep(300);
+        clawLeftServo.setPosition(0.35);
         clawRightServo.setPosition(0.55);
         sleep(200);
 
@@ -404,13 +452,12 @@ public class RedLeftV2 extends LinearOpMode {
         //parking
         TrajectorySequence parking = drive.trajectorySequenceBuilder(goToBoardLastLeg.end())
 
-                .lineTo(new Vector2d(-42, -48), setSpeed(20), setAccelatation())
+                .lineTo(new Vector2d(-32, -44))
+                .lineTo(new Vector2d(-20, -44))
                 .addTemporalMarker(1, () -> {
                     wristServo.setPosition(0.05);
                     moveArm(500, 1);
                 })
-                //.lineTo(new Vector2d(-60, -48), setSpeed(40), setAccelatation())
-                //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();
         drive.followTrajectorySequence(parking);
         moveArm(0, 1);
@@ -428,8 +475,15 @@ public class RedLeftV2 extends LinearOpMode {
         armMotor.setPower(power);
         armMotor.setTargetPosition(targetPosition);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
     }
 
+    private void moveViperslides(int targetPosition, double power) {
+        viperSlideLeftMotor.setPower(power);
+        viperSlideLeftMotor.setTargetPosition(targetPosition);
+        viperSlideLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        viperSlideRightMotor.setPower(power);
+        viperSlideRightMotor.setTargetPosition(targetPosition);
+        viperSlideRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
 
 }
