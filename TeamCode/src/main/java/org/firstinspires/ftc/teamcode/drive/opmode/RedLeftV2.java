@@ -82,7 +82,7 @@ public class RedLeftV2 extends LinearOpMode {
         waitForStart();
 
         //Set initial position
-        startPose = new Pose2d(-65,37.5, Math.toRadians(180));
+        startPose = new Pose2d(-65,36, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
 
         //if (opModeIsActive()) {
@@ -258,10 +258,10 @@ public class RedLeftV2 extends LinearOpMode {
         // Drop the hex
         wristServo.setPosition(0.25);
         TrajectorySequence dropTheHex = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-38, 39.5, Math.toRadians(45)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-48, 40, Math.toRadians(20)), setSpeed(20), setAccelatation())
                 .build();
         drive.followTrajectorySequence(dropTheHex);
-        clawRightServo.setPosition(0.5);
+        clawLeftServo.setPosition(0.45);
         moveViperslides(225,1);
         sleep(300);
 
@@ -269,16 +269,17 @@ public class RedLeftV2 extends LinearOpMode {
 
         //Go to board
         TrajectorySequence priorToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
-                .lineTo(new Vector2d(-45.5, 37.5))
-                .lineToLinearHeading(new Pose2d(-42.5, 54, Math.toRadians(70)), setSpeed(30), setAccelatation())
-                .lineTo(new Vector2d(-39.5,58.75), setSpeed(30), setAccelatation())
+                //.lineTo(new Vector2d(-54, 37))
+                .lineToLinearHeading(new Pose2d(-55, 36, Math.toRadians(60)), setSpeed(30), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-44, 57, Math.toRadians(60)), setSpeed(30), setAccelatation())
+                //.lineTo(new Vector2d(-39.5,58.75), setSpeed(30), setAccelatation())
                 .build();
         drive.followTrajectorySequence(priorToBoard);
         sleep(200);
-        clawRightServo.setPosition(1);
+        clawLeftServo.setPosition(0);
         sleep(300);
 
-
+/*
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(priorToBoard.end())
                 .lineTo(new Vector2d(-42.5, 54))
                 //.turn(Math.toRadians(90))
@@ -321,6 +322,8 @@ public class RedLeftV2 extends LinearOpMode {
                 .build();
         drive.followTrajectorySequence(parking);
         moveArm(0, 1);
+
+ */
     }
 
     private void doTaskForPosition2(){

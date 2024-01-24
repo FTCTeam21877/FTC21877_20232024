@@ -148,7 +148,7 @@ public class RedRightV1 extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_21877_RedCup.tflite");
+        myTfodProcessorBuilder.setModelFileName("model_21877_RedCupWL.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedCup"));
         // Set the aspect ratio for the images used when the model was created.
@@ -275,7 +275,7 @@ public class RedRightV1 extends LinearOpMode {
                 .lineTo(new Vector2d(-30, -52))
                 //.splineToLinearHeading(new Pose2d(-30, -44),Math.toRadians(180))
                 .addTemporalMarker(2, () -> {
-                    moveArm(340, 1);
+                    moveArm(300, 1);
 
                 })
 
@@ -283,7 +283,7 @@ public class RedRightV1 extends LinearOpMode {
         drive.followTrajectorySequence(goToBoard);
 
         sleep(300);
-        wristServo.setPosition(0.38);
+        wristServo.setPosition(0.4);
         sleep(200);
         clawRightServo.setPosition(0.55);
         sleep(100);
@@ -295,7 +295,7 @@ public class RedRightV1 extends LinearOpMode {
                     wristServo.setPosition(0.05);
                     moveArm(500, 1);
                 })
-                .lineTo(new Vector2d(-60, -48), setSpeed(40), setAccelatation())
+                .lineTo(new Vector2d(-63, -48), setSpeed(40), setAccelatation())
                 //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();
         drive.followTrajectorySequence(parking);
@@ -320,10 +320,10 @@ public class RedRightV1 extends LinearOpMode {
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
                 .lineTo(new Vector2d(-42, -15), setSpeed(10), setAccelatation())
                 .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-34, -52))
+                .lineTo(new Vector2d(-34, -51))
                 //.splineToLinearHeading(new Pose2d(-30, -44),Math.toRadians(180))
                 .addTemporalMarker(2, () -> {
-                    moveArm(340, 1);
+                    moveArm(300, 1);
 
                 })
 
@@ -331,7 +331,7 @@ public class RedRightV1 extends LinearOpMode {
         drive.followTrajectorySequence(goToBoard);
 
         sleep(300);
-        wristServo.setPosition(0.38);
+        wristServo.setPosition(0.40);
         sleep(200);
         clawRightServo.setPosition(0.55);
         sleep(100);
@@ -343,7 +343,7 @@ public class RedRightV1 extends LinearOpMode {
                     wristServo.setPosition(0.05);
                     moveArm(500, 1);
                 })
-                .lineTo(new Vector2d(-60, -48), setSpeed(40), setAccelatation())
+                .lineTo(new Vector2d(-63, -48), setSpeed(40), setAccelatation())
                 //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();
         drive.followTrajectorySequence(parking);
@@ -367,10 +367,10 @@ public class RedRightV1 extends LinearOpMode {
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(dropTheHex.end())
                 .lineTo(new Vector2d(-48, -27), setSpeed(20), setAccelatation())
                 .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-40, -52))
+                .lineTo(new Vector2d(-41, -52))
                 //.splineToLinearHeading(new Pose2d(-30, -44),Math.toRadians(180))
                 .addTemporalMarker(2, () -> {
-                    moveArm(340, 1);
+                    moveArm(300, 1);
 
                 })
 
@@ -378,19 +378,19 @@ public class RedRightV1 extends LinearOpMode {
         drive.followTrajectorySequence(goToBoard);
 
         sleep(300);
-        wristServo.setPosition(0.38);
+        wristServo.setPosition(0.40);
         sleep(200);
         clawRightServo.setPosition(0.55);
         sleep(100);
 
         //parking
         TrajectorySequence parking = drive.trajectorySequenceBuilder(goToBoard.end())
-                .lineTo(new Vector2d(-40, -48), setSpeed(20), setAccelatation())
+                .lineTo(new Vector2d(-41, -48), setSpeed(20), setAccelatation())
                 .addTemporalMarker(1, () -> {
                     wristServo.setPosition(0.05);
                     moveArm(500, 1);
                 })
-                .lineTo(new Vector2d(-60, -48), setSpeed(40), setAccelatation())
+                .lineTo(new Vector2d(-63, -48), setSpeed(40), setAccelatation())
                 //.splineToLinearHeading(new Pose2d(-30, -62), -90)
                 .build();
         drive.followTrajectorySequence(parking);
