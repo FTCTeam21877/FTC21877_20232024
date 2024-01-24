@@ -81,7 +81,7 @@ public class BlueDepotSideCB extends LinearOpMode {
         while (true) {
             myTfodRecognitions = myTfodProcessor.getRecognitions();
             int noOfObjects = myTfodRecognitions.size();
-            if (noOfObjects > 0) {
+            if (noOfObjects >= 0) {
                 break;
             }
             sleep(1000);
@@ -91,8 +91,8 @@ public class BlueDepotSideCB extends LinearOpMode {
         //Test position
         int degree = 0;
 
-        Boolean leftSide =false;
-        Boolean middle = false;
+        Boolean leftSide =true;
+        Boolean middle = true;
         if(leftSide){
             left(drive,startPose);
         }else if(middle){
@@ -120,9 +120,10 @@ public class BlueDepotSideCB extends LinearOpMode {
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
-        changingLinearSlides(1200,0.8,true, true);
+        changingLinearSlides(1000,0.8,true, true);
         TrajectorySequence strafeLeft = drive.trajectorySequenceBuilder(goToStartBridge.end())
-                .strafeLeft(10)
+                .forward(3)
+                .strafeLeft(15)
                 .addTemporalMarker(0.5, () ->{
                     resetStuff();
                 })
@@ -156,9 +157,10 @@ public class BlueDepotSideCB extends LinearOpMode {
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
-        changingLinearSlides(1200,0.8,true, true);
+        changingLinearSlides(1000,0.8,true, true);
         TrajectorySequence gotStrafe = drive.trajectorySequenceBuilder(goToBoard.end())
-                .strafeLeft(8)
+                .forward(3)
+                .strafeLeft(20)
                 .addTemporalMarker(0.5, () ->{
                     resetStuff();
                 })
@@ -202,10 +204,11 @@ public class BlueDepotSideCB extends LinearOpMode {
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
-        changingLinearSlides(1200,0.8,true, true);
+        changingLinearSlides(1000,0.8,true, true);
 
         TrajectorySequence strafeabut = drive.trajectorySequenceBuilder(goToBoard.end())
-                .strafeLeft(10)
+                .forward(3)
+                .strafeLeft(25)
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
                 })

@@ -90,7 +90,7 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
 //        telemetry.addData("what opject",position);
 //        telemetry.update();
         waitForStart();
-        boolean leftTrue = false;
+        boolean leftTrue = true;
         boolean middleTrue = false;
         if(leftTrue){
             left(drive,startPose);
@@ -118,11 +118,12 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
-        changingLinearSlides(1300,0.8,true, true);
+        changingLinearSlides(1200,0.8,true, true);
 
 
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
+                .forward(2.5)
                 .strafeRight(20)
                 .addTemporalMarker(0.8, () -> {
                     resetStuff();
@@ -151,11 +152,12 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
-        changingLinearSlides(1300,0.8,true, true);
+        changingLinearSlides(1200,0.8,true, true);
 
 
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
+                .forward(2.5)
                 .strafeRight(25)
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
@@ -184,9 +186,10 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
-        changingLinearSlides(1300,0.8,true, true);
+        changingLinearSlides(1200,0.8,true, true);
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
+                .forward(2.5)
                 .strafeRight(33)
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
