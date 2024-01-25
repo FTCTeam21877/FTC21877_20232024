@@ -97,8 +97,7 @@ public class RedDepotSideCB extends LinearOpMode {
         //Test position
         int degree = 0;
         waitForStart();
-        Boolean leftSide =true;
-        Boolean middle = false;
+
         if(position == 1){
             leftSide(drive,startPose);
         }else if(position == 2){

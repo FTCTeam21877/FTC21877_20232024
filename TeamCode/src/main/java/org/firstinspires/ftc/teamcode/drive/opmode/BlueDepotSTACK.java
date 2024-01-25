@@ -84,7 +84,6 @@ public class BlueDepotSTACK extends LinearOpMode {
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch Play to start OpMode");
         telemetry.update();
-        waitForStart();
         List<Recognition> myTfodRecognitions = null;
         while (true) {
             myTfodRecognitions = myTfodProcessor.getRecognitions();
@@ -95,18 +94,26 @@ public class BlueDepotSTACK extends LinearOpMode {
             sleep(1000);
             telemetry.addLine("Waiting to detect");
         }
-        int position = getPosition(myTfodRecognitions);
+
+
+        int position = -1;
         //Test position
         int degree = 0;
+        waitForStart();
+        while (position < 0) {
+            sleep(1000);
+            myTfodRecognitions = myTfodProcessor.getRecognitions();
+            telemetry.addData("what opjject", getPosition(myTfodRecognitions));
+            position = getPosition(myTfodRecognitions);
+            telemetry.update();
+        }
 
-        Boolean leftSide =false;
-        Boolean middle = false;
-        if(leftSide){
-            left(drive,startPose);
-        }else if(middle){
+        if(true ){//position == 2
             middle(drive,startPose);
-        }else{
+        }else if(position == 3){
             rightSide(drive,startPose);
+        }else{
+            left(drive,startPose);
         }
 
     }
@@ -143,6 +150,9 @@ public class BlueDepotSTACK extends LinearOpMode {
                 .addTemporalMarker(0.45, () -> {
                     Intake.setPower(-0.7);
                     hard();
+                })
+                .addTemporalMarker(1.5, () -> {
+                    Intake.setPower(-0.7);
                 })
                 .forward(6.5, setSpeed(13), setAccelatation())
                 .build();
@@ -182,28 +192,50 @@ public class BlueDepotSTACK extends LinearOpMode {
         sleep(800);
         Intake.setPower(0);
 
-        TrajectorySequence goToPickUpStack = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .strafeLeft(12)
+        TrajectorySequence lineUp = drive.trajectorySequenceBuilder(goToDroppingPose.end())
+                .lineToLinearHeading(new Pose2d(15, 30, Math.toRadians(90)))
+                .build();
+        drive.followTrajectorySequence(lineUp);
+
+        TrajectorySequence goToPickUpStack = drive.trajectorySequenceBuilder(lineUp.end())
                 .lineTo(new Vector2d(14.5,53.25),setSpeed(10),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToPickUpStack);
         soft();
 
-        TrajectorySequence splineToTruss = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(12, 0, Math.toRadians(90)))
+        TrajectorySequence pickUpExtra = drive.trajectorySequenceBuilder(goToPickUpStack.end())
+                .back(6.5, setSpeed(50),setAccelatation())
+                .addTemporalMarker(0.2,() ->{
+                    Dicky.setPosition(0.49);
+                })
+                .addTemporalMarker(0.3,() ->{
+                    Dicky.setPosition(0.6);
+                })
+                .addTemporalMarker(0.45, () -> {
+                    Intake.setPower(-0.7);
+                    hard();
+                })
+                .addTemporalMarker(1.5, () -> {
+                    Intake.setPower(-0.7);
+                })
+                .forward(6.5, setSpeed(13), setAccelatation())
                 .build();
-        drive.followTrajectorySequence(splineToTruss);
-        TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(splineToTruss.end())
+        drive.followTrajectorySequence(pickUpExtra);
+        Dicky.setPosition(0);
+
+        TrajectorySequence goToStartBridge = drive.trajectorySequenceBuilder(pickUpExtra.end())
+                .lineTo(new Vector2d(12,36))
                 .lineTo(new Vector2d(12,-48))
                 .lineTo(new Vector2d(33,-57))
                 .build();
-        drive.followTrajectorySequence(goToBoard);
+        drive.followTrajectorySequence(goToStartBridge);
 
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
         changingLinearSlides(1000,0.8,true, true);
-        TrajectorySequence gotStrafe = drive.trajectorySequenceBuilder(goToBoard.end())
+
+        TrajectorySequence gotStrafe = drive.trajectorySequenceBuilder(goToStartBridge.end())
                 .forward(3)
                 .strafeLeft(20)
                 .addTemporalMarker(0.5, () ->{
@@ -321,9 +353,9 @@ public class BlueDepotSTACK extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_20240120_172231.tflite");
+        myTfodProcessorBuilder.setModelFileName("model_20240124_182536.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
-        myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedCup"));
+        myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("BlueCup"));
         // Set the aspect ratio for the images used when the model was created.
         myTfodProcessorBuilder.setModelAspectRatio(16 / 9);
         // Create a TfodProcessor by calling build.
@@ -410,15 +442,20 @@ public class BlueDepotSTACK extends LinearOpMode {
                 smallestX = x;
                 smallestY = y;
             }
+            float left = myTfodRecognition.getLeft();
+            telemetry.addData("- Left", JavaUtil.formatNumber(left, 0));
+            if (left >= 250 && left < 1200) {
+                position = 2;
+            }
+            else if(left >= 1200){
+                position = 3;
+            }
+            telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
+            telemetry.update();
+        }
 
-        }
-        if (smallestX < 250) {
-            position = 1;
-        } else if (smallestX >= 250 && smallestX < 700) {
-            position = 2;
-        }
-        telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
-        //telemetry.update();
+
+
         return position;
     }
 
