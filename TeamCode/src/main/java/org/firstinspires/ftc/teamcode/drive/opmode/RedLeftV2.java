@@ -106,7 +106,7 @@ public class RedLeftV2 extends LinearOpMode {
             }*/
             //Wait until object is detected
             List<Recognition> myTfodRecognitions = null;
-            int maxWait = 800;
+            int maxWait = 1000;
             int totalWait = 0;
             while (opModeIsActive() && !isStopRequested()) {
 

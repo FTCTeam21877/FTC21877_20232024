@@ -104,7 +104,7 @@ public class BlueRightV2 extends LinearOpMode {
             }*/
             //Wait until object is detected
             List<Recognition> myTfodRecognitions = null;
-            int maxWait = 800;
+            int maxWait = 1000;
             int totalWait = 0;
             while (true) {
                 myTfodRecognitions = myTfodProcessor.getRecognitions();
