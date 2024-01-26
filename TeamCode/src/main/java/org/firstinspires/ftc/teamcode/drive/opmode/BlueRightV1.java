@@ -116,7 +116,9 @@ public class BlueRightV1 extends LinearOpMode {
                 telemetry.addLine("Waiting to detect");
                 totalWait +=1000;
             }
-            int position = getPosition(myTfodRecognitions);
+            //int position = getPosition(myTfodRecognitions);
+            int position = CircuitMakerUtils.getPositionByConfidence(myTfodRecognitions, telemetry);
+
             //Test position
             int degree = 0;
             if (position == 1) {

@@ -117,7 +117,9 @@ public class BlueLeftV1 extends LinearOpMode {
                 telemetry.update();
                 totalWait +=200;
             }
-            int position = getPosition(myTfodRecognitions);
+            //int position = getPosition(myTfodRecognitions);
+            int position = CircuitMakerUtils.getPositionByConfidence(myTfodRecognitions, telemetry);
+
             //Test position
             int degree = 0;
             if (position == 1) {
