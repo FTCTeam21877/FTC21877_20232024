@@ -293,7 +293,7 @@ public class RedLeftV2 extends LinearOpMode {
                 })
                 .lineToLinearHeading(new Pose2d(-13, 49, Math.toRadians(0)))
                 .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-13, -42))
+                .lineTo(new Vector2d(-12, -42))
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
@@ -367,7 +367,7 @@ public class RedLeftV2 extends LinearOpMode {
                 })
                 .lineToLinearHeading(new Pose2d(-13, 49, Math.toRadians(0)), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-13, -42), setSpeed(30), setAccelatation())
+                .lineTo(new Vector2d(-12, -42), setSpeed(30), setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
@@ -442,7 +442,7 @@ public class RedLeftV2 extends LinearOpMode {
                 })
                 .lineToLinearHeading(new Pose2d(-13, 49, Math.toRadians(0)))
                 .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-13, -42))
+                .lineTo(new Vector2d(-12, -42))
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
