@@ -62,6 +62,7 @@ public class BlueLeftV2 extends LinearOpMode {
 
         clawLeftServo.setPosition(0.00);
         clawRightServo.setPosition(1.00);
+        sleep(1000);
         wristServo.setDirection(Servo.Direction.REVERSE);
         wristServo.setPosition(0.03);
         launchServo.setPosition(0.50);
