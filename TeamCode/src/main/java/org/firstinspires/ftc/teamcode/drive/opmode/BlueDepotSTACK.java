@@ -131,24 +131,24 @@ public class BlueDepotSTACK extends LinearOpMode {
         //Intake.setPower(0);
 
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(drop.end())
-                .lineToLinearHeading(new Pose2d(27, 30, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(14, 30, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
 
 
         TrajectorySequence goToPickUpStack = drive.trajectorySequenceBuilder(goToDropingPose.end())
-                .strafeLeft(12)
-                .lineTo(new Vector2d(14.5,52.5),setSpeed(10),setAccelatation())
+                .lineTo(new Vector2d(14,53),setSpeed(10),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToPickUpStack);
-        soft();
+        Dicky.setPosition(0.54);
+
         TrajectorySequence pickUpExtra = drive.trajectorySequenceBuilder(goToPickUpStack.end())
-                .back(6.5, setSpeed(50),setAccelatation())
+                .back(8, setSpeed(25),setAccelatation())
                 .addTemporalMarker(0.2,() ->{
-                    Dicky.setPosition(0.49);
+                    Dicky.setPosition(0.54);
                 })
                 .addTemporalMarker(0.3,() ->{
-                    Dicky.setPosition(0.6);
+                    Dicky.setPosition(0.54);
                 })
                 .addTemporalMarker(0.45, () -> {
                     Intake.setPower(-0.7);
@@ -157,7 +157,8 @@ public class BlueDepotSTACK extends LinearOpMode {
                 .addTemporalMarker(1.5, () -> {
                     Intake.setPower(-0.7);
                 })
-                .forward(6.5, setSpeed(13), setAccelatation())
+                .lineToLinearHeading(new Pose2d(14,52.5, Math.toRadians(90)))
+                //.forward(6.5, setSpeed(13), setAccelatation())
                 .build();
         drive.followTrajectorySequence(pickUpExtra);
         Dicky.setPosition(0);
