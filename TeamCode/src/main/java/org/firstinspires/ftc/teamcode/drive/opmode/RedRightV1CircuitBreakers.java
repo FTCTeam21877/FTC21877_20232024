@@ -28,6 +28,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
     private DcMotor LeftBack;
     private DcMotor LeftFront;
     private Servo BoxWrist;
+    private Servo Dicky;
     private Servo LeftBox;
     private Servo RightBox;
     TfodProcessor myTfodProcessor;
@@ -50,6 +51,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         RightBox = hardwareMap.get(Servo.class, "RightBox");
         DroneLauncber = hardwareMap.get(Servo.class, "DroneLauncber");
         Intake = hardwareMap.get(DcMotor.class, "Intake");
+        Dicky = hardwareMap.get(Servo.class,"Dicky");
         RightFront = hardwareMap.get(DcMotor.class, "RightFront");
         RightBack = hardwareMap.get(DcMotor.class, "RightBack");
         LeftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -60,8 +62,8 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         LeftFront.setDirection(DcMotor.Direction.REVERSE);
         RightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
         BoxWrist.setPosition(0.15);
-        LeftBox.setPosition(0.81);
-        RightBox.setPosition(0.96);
+        LeftBox.setPosition(1);
+        RightBox.setPosition(0.7);
         DroneLauncber.setPosition(0.5);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(-65,-34, Math.toRadians(0));
@@ -105,13 +107,16 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
     }
 
     private void right(SampleMecanumDrive drive, Pose2d startPose) {
+        Dicky.setPosition(0.6);
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-47, -50, Math.toRadians(30)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
-        Intake.setPower(.5);
-        sleep(800);
-        Intake.setPower(0);
+//        Intake.setPower(.5);
+//        sleep(800);
+//        Intake.setPower(0);
+        hard();
+
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDropingPose.end())
                 .lineToLinearHeading(new Pose2d(-45, -70, Math.toRadians(87)))
                 .build();
@@ -135,14 +140,16 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         telemetry.update();
     }
     private void middle(SampleMecanumDrive drive, Pose2d startPose) {
+        Dicky.setPosition(0.6);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(-39,-32))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
-        Intake.setPower(.5);
-        sleep(800);
-        Intake.setPower(0);
+//        Intake.setPower(.5);
+//        sleep(800);
+//        Intake.setPower(0);
+        hard();
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
                 .lineToLinearHeading(new Pose2d(-40, -70, Math.toRadians(87)))
@@ -168,14 +175,16 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         telemetry.update();
     }
     private void leftSide(SampleMecanumDrive drive, Pose2d startPose) {
+        Dicky.setPosition(0.6);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-43, -29, Math.toRadians(37)))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
-        Intake.setPower(.5);
-        sleep(800);
-        Intake.setPower(0);
+//        Intake.setPower(.5);
+//        sleep(800);
+//        Intake.setPower(0);
+        hard();
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
                 .lineToLinearHeading(new Pose2d(-32, -72, Math.toRadians(87)))
@@ -201,6 +210,17 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
 
 
     private void changingLinearSlides(int ticks, double power, boolean openWrist, boolean openFlappers){
+        //open posotion
+        if (openFlappers) {
+            LeftBox.setPosition(0.81);
+            RightBox.setPosition(0.96);
+            sleep(300);
+        }
+        else{
+            LeftBox.setPosition(1);
+            RightBox.setPosition(0.7);
+            sleep(300);
+        }
         LeftLinearSlide.setTargetPosition(ticks);
         LeftLinearSlide.setPower(power);
         LeftLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -209,24 +229,14 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         RightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if(openWrist) {
             BoxWrist.setPosition(0.42);
-            sleep(1000);
+            sleep(300);
         }
         else{
             BoxWrist.setPosition(0.15);
-            sleep(1000);
+            sleep(300);
         }
 
-        //open posotion
-        if (openFlappers) {
-            LeftBox.setPosition(0.81);
-            RightBox.setPosition(0.96);
-            sleep(2000);
-        }
-        else{
-            LeftBox.setPosition(1);
-            RightBox.setPosition(0.7);
-            sleep(2000);
-        }
+
 
     }
     private void resetStuff(){
@@ -246,6 +256,14 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
 
 
 
+    }
+    private void soft(){
+        Dicky.setPosition(0.4);
+        sleep(100);
+    }
+    private void hard(){
+        Dicky.setPosition(0);
+        sleep(100);
     }
     private void initTfod() {
         TfodProcessor.Builder myTfodProcessorBuilder;

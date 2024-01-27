@@ -65,9 +65,9 @@ public class RedDepotSideCB extends LinearOpMode {
         LeftFront.setDirection(DcMotor.Direction.REVERSE);
         RightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
         BoxWrist.setPosition(0.14);
-        LeftBox.setPosition(0.81);
-        RightBox.setPosition(0.96);
-        DroneLauncber.setPosition(0.32);
+        LeftBox.setPosition(1);
+        RightBox.setPosition(0.7);
+        DroneLauncber.setPosition(0.5);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Dicky.setPosition(0);
         Pose2d startPose = new Pose2d(-65,34, Math.toRadians(0));
@@ -110,14 +110,15 @@ public class RedDepotSideCB extends LinearOpMode {
     }
 
     private void leftSide(SampleMecanumDrive drive, Pose2d startPose) {
-
+        Dicky.setPosition(0.6);
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-27, 30, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
-        Intake.setPower(.5);
-        sleep(800);
-        Intake.setPower(0);
+//        Intake.setPower(.5);
+//        sleep(800);
+//        Intake.setPower(0);
+        hard();
 //        TrajectorySequence goToPickUpStack = drive.trajectorySequenceBuilder(goToDropingPose.end())
 //                .strafeRight(12)
 //                .lineTo(new Vector2d(-14,53),setSpeed(15),setAccelatation())
@@ -153,14 +154,16 @@ public class RedDepotSideCB extends LinearOpMode {
         telemetry.update();
     }
     private void middle(SampleMecanumDrive drive, Pose2d startPose) {
+        Dicky.setPosition(0.6);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-14, 29, Math.toRadians(155)))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
-        Intake.setPower(.5);
-        sleep(800);
-        Intake.setPower(0);
+//        Intake.setPower(.5);
+//        sleep(800);
+//        Intake.setPower(0);
+        hard();
 
         TrajectorySequence splineToTruss = drive.trajectorySequenceBuilder(goToDroppingPose.end())
                 .lineToLinearHeading(new Pose2d(-12, 0, Math.toRadians(90)))
@@ -183,14 +186,16 @@ public class RedDepotSideCB extends LinearOpMode {
         telemetry.update();
     }
     private void right(SampleMecanumDrive drive, Pose2d startPose) {
+        Dicky.setPosition(0.6);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-40, 29, Math.toRadians(-40)))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
-        Intake.setPower(.5);
-        sleep(800);
-        Intake.setPower(0);
+//        Intake.setPower(.5);
+//        sleep(800);
+//        Intake.setPower(0);
+        hard();
 
         TrajectorySequence goInFrontOfTheTruss = drive.trajectorySequenceBuilder(goToDroppingPose.end())
                 .lineToLinearHeading(new Pose2d(-47, 30, Math.toRadians(0)))
@@ -227,6 +232,18 @@ public class RedDepotSideCB extends LinearOpMode {
 
 
     private void changingLinearSlides(int ticks, double power, boolean openWrist, boolean openFlappers){
+        //open posotion
+        if (openFlappers) {
+            LeftBox.setPosition(0.81);
+            RightBox.setPosition(0.96);
+            sleep(300);
+        }
+        else{
+            LeftBox.setPosition(1);
+            RightBox.setPosition(0.7);
+            sleep(300);
+        }
+
         LeftLinearSlide.setTargetPosition(ticks);
         LeftLinearSlide.setPower(power);
         LeftLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -235,24 +252,14 @@ public class RedDepotSideCB extends LinearOpMode {
         RightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if(openWrist) {
             BoxWrist.setPosition(0.45);
-            sleep(1000);
+            sleep(300);
         }
         else{
             BoxWrist.setPosition(0.14);
-            sleep(1000);
+            sleep(300);
         }
 
-        //open posotion
-        if (openFlappers) {
-            LeftBox.setPosition(0.81);
-            RightBox.setPosition(0.96);
-            sleep(2000);
-        }
-        else{
-            LeftBox.setPosition(1);
-            RightBox.setPosition(0.7);
-            sleep(2000);
-        }
+
 
     }
     private void resetStuff(){

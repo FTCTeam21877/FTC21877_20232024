@@ -31,7 +31,7 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
     private Servo LeftBox;
     private Servo RightBox;
     TfodProcessor myTfodProcessor;
-
+    private Servo Dicky;
     private Servo DroneLauncber;
     private DcMotor Intake;
     private DcMotor RightFront;
@@ -48,6 +48,7 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         BoxWrist = hardwareMap.get(Servo.class, "BoxWrist");
         LeftBox = hardwareMap.get(Servo.class, "LeftBox");
         RightBox = hardwareMap.get(Servo.class, "RightBox");
+        Dicky = hardwareMap.get(Servo.class,"Dicky");
         DroneLauncber = hardwareMap.get(Servo.class, "DroneLauncber");
         Intake = hardwareMap.get(DcMotor.class, "Intake");
         RightFront = hardwareMap.get(DcMotor.class, "RightFront");
@@ -60,9 +61,10 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         LeftFront.setDirection(DcMotor.Direction.REVERSE);
         RightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
         BoxWrist.setPosition(0.14);
-        LeftBox.setPosition(0.81);
-        RightBox.setPosition(0.96);
-        DroneLauncber.setPosition(0.32);
+        Dicky.setPosition(0);
+        LeftBox.setPosition(1);
+        RightBox.setPosition(0.7);
+        DroneLauncber.setPosition(0.5);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(65,-34, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
@@ -90,7 +92,7 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
 //        telemetry.addData("what opject",position);
 //        telemetry.update();
         waitForStart();
-        boolean leftTrue = true;
+        boolean leftTrue = false;
         boolean middleTrue = false;
         if(leftTrue){
             left(drive,startPose);
@@ -104,21 +106,23 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
     }
 
     private void left(SampleMecanumDrive drive, Pose2d startPose) {
+        Dicky.setPosition(0.6);
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(47, -52, Math.toRadians(150)))
+                .lineToLinearHeading(new Pose2d(46, -49, Math.toRadians(150)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
-        Intake.setPower(.5);
-        sleep(800);
-        Intake.setPower(0);
+        hard();
+//        Intake.setPower(.5);
+//        sleep(800);
+//        Intake.setPower(0);
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDropingPose.end())
-                .lineToLinearHeading(new Pose2d(45, -71, Math.toRadians(87)))
+                .lineToLinearHeading(new Pose2d(44.0, -70.69, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
 
-        changingLinearSlides(1200,0.8,true, true);
+        changingLinearSlides(1000,0.8,true, true);
 
 
 
@@ -135,25 +139,28 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         telemetry.update();
     }
     private void middle(SampleMecanumDrive drive, Pose2d startPose) {
+        Dicky.setPosition(0.6);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(39,-32))
+                .lineTo(new Vector2d(37.5,-32))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
-
-        Intake.setPower(.5);
-        sleep(800);
-        Intake.setPower(0);
+        hard();
+//        Intake.setPower(.5);
+//        sleep(800);
+//        Intake.setPower(0);
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(40, -70, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(41, -69, Math.toRadians(93)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
+        changingLinearSlides(1000,0.8,true, false);
 
-        LeftBox.setPosition(1);
-        RightBox.setPosition(0.7);
-
-        changingLinearSlides(1200,0.8,true, true);
-
+        TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
+                .back(2)
+                .build();
+        drive.followTrajectorySequence(goBack);
+        LeftBox.setPosition(0.81);
+        RightBox.setPosition(0.96);
 
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
@@ -169,26 +176,31 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         telemetry.update();
     }
     private void right(SampleMecanumDrive drive, Pose2d startPose) {
+        Dicky.setPosition(0.6);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(43, -29, Math.toRadians(143)))
+                .lineToLinearHeading(new Pose2d(43, -26, Math.toRadians(143)))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
-
-        Intake.setPower(.5);
-        sleep(800);
-        Intake.setPower(0);
+        hard();
+//        Intake.setPower(.5);
+//        sleep(800);
+//        Intake.setPower(0);
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(32, -71, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(32, -70, Math.toRadians(93)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
+        changingLinearSlides(1200,0.8,true, false);
+        TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
+                .back(2)
+                .build();
+        drive.followTrajectorySequence(goBack);
+        LeftBox.setPosition(0.81);
+        RightBox.setPosition(0.96);
 
-        LeftBox.setPosition(1);
-        RightBox.setPosition(0.7);
 
-        changingLinearSlides(1200,0.8,true, true);
 
-        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
+        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goBack.end())
                 .forward(2.5)
                 .strafeRight(33)
                 .addTemporalMarker(0.5, () -> {
@@ -203,6 +215,19 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
 
 
     private void changingLinearSlides(int ticks, double power, boolean openWrist, boolean openFlappers){
+
+
+        //open posotion
+        if (openFlappers) {
+            LeftBox.setPosition(0.81);
+            RightBox.setPosition(0.96);
+            sleep(300);
+        }
+        else{
+            LeftBox.setPosition(1);
+            RightBox.setPosition(0.7);
+            sleep(300);
+        }
         LeftLinearSlide.setTargetPosition(ticks);
         LeftLinearSlide.setPower(power);
         LeftLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -211,24 +236,14 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         RightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if(openWrist) {
             BoxWrist.setPosition(0.45);
-            sleep(1000);
+            sleep(300);
         }
         else{
             BoxWrist.setPosition(0.14);
-            sleep(1000);
+            sleep(300);
         }
 
-        //open posotion
-        if (openFlappers) {
-            LeftBox.setPosition(0.81);
-            RightBox.setPosition(0.96);
-            sleep(2000);
-        }
-        else{
-            LeftBox.setPosition(1);
-            RightBox.setPosition(0.7);
-            sleep(2000);
-        }
+
 
     }
     private void resetStuff(){
@@ -357,6 +372,14 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
         //telemetry.update();
         return position;
+    }
+    private void soft(){
+        Dicky.setPosition(0.45);
+        sleep(100);
+    }
+    private void hard(){
+        Dicky.setPosition(0);
+        sleep(100);
     }
 
 

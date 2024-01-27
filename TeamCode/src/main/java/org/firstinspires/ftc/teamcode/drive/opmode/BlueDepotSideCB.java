@@ -62,7 +62,7 @@ public class BlueDepotSideCB extends LinearOpMode {
         BoxWrist.setPosition(0.14);
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
-        DroneLauncber.setPosition(0.32);
+        DroneLauncber.setPosition(0.5);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(65,34, Math.toRadians(180));
 
