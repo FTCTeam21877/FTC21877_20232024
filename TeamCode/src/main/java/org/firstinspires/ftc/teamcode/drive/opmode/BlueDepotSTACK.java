@@ -85,6 +85,7 @@ public class BlueDepotSTACK extends LinearOpMode {
         telemetry.addData(">", "Touch Play to start O pMode");
         telemetry.update();
         List<Recognition> myTfodRecognitions = null;
+        int position = -1;
         while (true) {
             myTfodRecognitions = myTfodProcessor.getRecognitions();
             int noOfObjects = myTfodRecognitions.size();
@@ -95,19 +96,16 @@ public class BlueDepotSTACK extends LinearOpMode {
             telemetry.addLine("Waiting to detect");
         }
 
-
-        int position = -1;
         //Test position
         int degree = 0;
         waitForStart();
         while (position < 0) {
             sleep(1000);
             myTfodRecognitions = myTfodProcessor.getRecognitions();
-            telemetry.addData("what opjject", getPosition(myTfodRecognitions));
+            telemetry.addData("what opject", getPosition(myTfodRecognitions));
             position = getPosition(myTfodRecognitions);
             telemetry.update();
         }
-        position=3;
         if(position == 1){
             left(drive,startPose);
         }else if(position == 2){
@@ -448,7 +446,7 @@ public class BlueDepotSTACK extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_20240124_182536.tflite");
+        myTfodProcessorBuilder.setModelFileName("BlueCupCircuitMakers.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("BlueCup"));
         // Set the aspect ratio for the images used when the model was created.
@@ -513,6 +511,7 @@ public class BlueDepotSTACK extends LinearOpMode {
         float previousHeight = 20000;
         float smallestX = 0;
         float smallestY = 0;
+        float previousConfidence =0;
         // Iterate through list and call a function to display info for each recognized object.
         for (Recognition myTfodRecognition_item : myTfodRecognitions) {
             myTfodRecognition = myTfodRecognition_item;
@@ -537,11 +536,13 @@ public class BlueDepotSTACK extends LinearOpMode {
                 smallestX = x;
                 smallestY = y;
             }
+
+
             float left = myTfodRecognition.getLeft();
             telemetry.addData("- Left", JavaUtil.formatNumber(left, 0));
-            if (smallestX > 100 && smallestX < 450) {
+            if (smallestX > 100 && smallestX < 350) {
                 position = 2;
-            } else if (smallestX >= 450) {
+            } else if (smallestX >= 350) {
                 position = 3;
             } else{
                 position = 1;

@@ -70,34 +70,41 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         drive.setPoseEstimate(startPose);
         USE_WEBCAM = true;
         // Initialize TFOD before waitForStart.
-//        initTfod();
-//        // Wait for the match to begin.
-//        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-//        telemetry.addData(">", "Touch Play to start OpMode");
-//        telemetry.update();
-//        List<Recognition> myTfodRecognitions = null;
-//        while (true) {
-//            myTfodRecognitions = myTfodProcessor.getRecognitions();
-//            int noOfObjects = myTfodRecognitions.size();
-//            if (noOfObjects > 0) {
-//                break;
-//            }
-//            sleep(1000);
-//            telemetry.addLine("Waiting to detect");
-//        }
-//        int position = getPosition(myTfodRecognitions);
-//        //Test position
-//        int degree = 0;
-//
-//        telemetry.addData("what opject",position);
-//        telemetry.update();
+        initTfod();
+        // Wait for the match to begin.
+        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+        telemetry.addData(">", "Touch Play to start OpMode");
+        telemetry.update();
+        List<Recognition> myTfodRecognitions = null;
+        /*while (true) {
+            myTfodRecognitions = myTfodProcessor.getRecognitions();
+            int noOfObjects = myTfodRecognitions.size();
+            if (noOfObjects >= 0) {
+                break;
+            }
+            sleep(1000);
+            telemetry.addLine("Waiting to detect");
+        }*/
+        int position = -1;
+        //Test position
+        int degree = 0;
         waitForStart();
-        boolean leftTrue = false;
-        boolean middleTrue = false;
-        if(leftTrue){
+        int i = 3;
+        while (position < 0 && i >0 ) {
+            sleep(1000);
+            telemetry.addData("Sleeping..", i);
+            myTfodRecognitions = myTfodProcessor.getRecognitions();
+            if (myTfodRecognitions!= null && myTfodRecognitions.size() > 0) {
+                position = getPosition(myTfodRecognitions);
+                telemetry.addData("what opjject", position);
+            }
+            i-=1;
+            telemetry.update();
+        }
+        if(position == 1){
             left(drive,startPose);
         }
-        else if(middleTrue){
+        else if(position == 2){
             middle(drive,startPose);
         }else{
             right(drive,startPose);
@@ -271,7 +278,7 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_20240124_182536.tflite");
+        myTfodProcessorBuilder.setModelFileName("BlueCupCircuitMakers.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("BlueCup"));
         // Set the aspect ratio for the images used when the model was created.
@@ -362,15 +369,15 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
             }
 
         }
-        if (smallestX >300) {
-            position = 3;
-        } else if (smallestX >= 250 && smallestX < 300) {
-            position = 2;
-        } else{
+        if (smallestX < 150) {
             position = 1;
+        } else if (smallestX >= 150 && smallestX < 450) {
+            position = 2;
         }
+
+
         telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
-        //telemetry.update();
+        telemetry.update();
         return position;
     }
     private void soft(){
