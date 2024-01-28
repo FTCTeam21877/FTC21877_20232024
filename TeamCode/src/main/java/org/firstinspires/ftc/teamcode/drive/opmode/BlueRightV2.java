@@ -380,6 +380,7 @@ public class BlueRightV2 extends LinearOpMode {
                 //.turn(Math.toRadians(90))
                 .addTemporalMarker(0.5,()->{
                     moveViperslides(0,1);
+                    wristServo.setPosition(0.03);
                 })
                 .lineToLinearHeading(new Pose2d(13, 49, Math.toRadians(180)), setSpeed(30), setAccelatation())
                 .turn(Math.toRadians(90))
@@ -468,9 +469,10 @@ public class BlueRightV2 extends LinearOpMode {
                     moveViperslides(0,1);
                     wristServo.setPosition(0.03);
                 })
-                .lineToLinearHeading(new Pose2d(13, 49, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(14, 49, Math.toRadians(180)))
                 .turn(Math.toRadians(90))
-                .lineTo(new Vector2d(13, -42))
+                .lineTo(new Vector2d(14, -12))
+                .lineTo(new Vector2d(14, -42))
                 .build();
         drive.followTrajectorySequence(goToBoard);
 
@@ -506,7 +508,6 @@ public class BlueRightV2 extends LinearOpMode {
                 .build();
         drive.followTrajectorySequence(parking);
         moveArm(0, 1);
-
 
     }
 

@@ -300,7 +300,7 @@ public class BlueLeftV2 extends LinearOpMode {
                 .lineTo(new Vector2d(37, 36))
                 .addTemporalMarker(5, () -> {
                     wristServo.setPosition(0.28);
-                    moveViperslides(225, 1);
+                    moveViperslides(250, 1);
                 })
                 .lineTo(new Vector2d(40, 56.5), setSpeed(20), setAccelatation())
                 //.splineToLinearHeading(new Pose2d(-30, -62), -90)
@@ -328,8 +328,8 @@ public class BlueLeftV2 extends LinearOpMode {
                 })
                 .lineToLinearHeading(new Pose2d(37, 40, Math.toRadians(270)))
                 .lineTo(new Vector2d(38, -10))
-                .lineTo(new Vector2d(42, -20))
-                .lineTo(new Vector2d(42, -49))
+                .lineTo(new Vector2d(40, -20))
+                .lineTo(new Vector2d(40, -49), setSpeed(20), setAccelatation())
                 .addTemporalMarker(3, () -> {
                     moveArm(330, 1);
                 })
