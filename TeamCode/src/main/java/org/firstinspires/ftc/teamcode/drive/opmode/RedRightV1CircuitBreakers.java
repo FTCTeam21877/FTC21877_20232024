@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -37,6 +40,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
     private DcMotor Intake;
     private DcMotor RightFront;
     private DcMotor RightBack;
+    private Servo DroneWrist;
     VisionPortal myVisionPortal;
 
 
@@ -46,6 +50,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         RightLinearSlide = hardwareMap.get(DcMotor.class, "RightLinearSlide");
         LeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
         LeftFront = hardwareMap.get(DcMotor.class, "LeftFront");
+
         BoxWrist = hardwareMap.get(Servo.class, "BoxWrist");
         LeftBox = hardwareMap.get(Servo.class, "LeftBox");
         RightBox = hardwareMap.get(Servo.class, "RightBox");
@@ -54,6 +59,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         Dicky = hardwareMap.get(Servo.class,"Dicky");
         RightFront = hardwareMap.get(DcMotor.class, "RightFront");
         RightBack = hardwareMap.get(DcMotor.class, "RightBack");
+        DroneWrist = hardwareMap.get(Servo.class, "DroneWrist");
         LeftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LeftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -64,7 +70,9 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         BoxWrist.setPosition(0.15);
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
-        DroneLauncber.setPosition(0.5);
+        DroneLauncber.setPosition(1);
+        DroneWrist.setPosition(0);
+        Dicky.setPosition(0);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(-65,-34, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
@@ -107,9 +115,9 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
     }
 
     private void right(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-45, -50, Math.toRadians(30)))
+                .lineToLinearHeading(new Pose2d(-43, -49, Math.toRadians(30)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
 //        Intake.setPower(.5);
@@ -118,14 +126,15 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         hard();
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDropingPose.end())
-                .lineToLinearHeading(new Pose2d(-45, -69, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-44, -67, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
-        changingLinearSlides(1200,0.8,true, false);
+        changingLinearSlides(1000,0.8,true, false);
         TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(3)
+                .back(3,setSpeed(5),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBack);
+
 
 
 
@@ -136,10 +145,13 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
 
 
         sleep(500);
+        changingLinearSlides(1300,0.8,true, false);
+
 
 
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goBack.end())
+                .forward(2)
                 .lineTo(new Vector2d(-65,-65))
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
@@ -151,9 +163,9 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         telemetry.update();
     }
     private void middle(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-37.5,-32))
+                .lineTo(new Vector2d(-35.5,-32))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
@@ -163,12 +175,12 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         hard();
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(-40, -69, Math.toRadians(87)))
+                .lineToLinearHeading(new Pose2d(-36.75, -67, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
-        changingLinearSlides(1200,0.8,true, false);
+        changingLinearSlides(1000,0.8,true, false);
         TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(2)
+                .back(2,setSpeed(5),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBack);
 
@@ -176,6 +188,9 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
 
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
+        sleep(500);
+        changingLinearSlides(1200,0.8,true, false);
+
 
 
 
@@ -193,9 +208,10 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         telemetry.update();
     }
     private void leftSide(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-43, -27.5, Math.toRadians(37)))
+                .lineToLinearHeading(new Pose2d(-35, -33, Math.toRadians(90)))
+                .forward(3)
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
@@ -205,12 +221,12 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         hard();
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(-32, -70, Math.toRadians(87)))
+                .lineToLinearHeading(new Pose2d(-32, -68, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
-        changingLinearSlides(1200,0.8,true, false);
+        changingLinearSlides(1000,0.8,true, false);
         TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(2)
+                .back(2.5,setSpeed(5),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBack);
 
@@ -223,8 +239,10 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
 
 
         sleep(500);
+        changingLinearSlides(1300,0.8,true, false);
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goBack.end())
+                .forward(2.5)
                 .strafeLeft(33)
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
@@ -256,7 +274,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         RightLinearSlide.setPower(power);
         RightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if(openWrist) {
-            BoxWrist.setPosition(0.42);
+            BoxWrist.setPosition(0.41);
             sleep(300);
         }
         else{
@@ -286,7 +304,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
 
     }
     private void soft(){
-        Dicky.setPosition(0.4);
+        Dicky.setPosition(0.51);
         sleep(100);
     }
     private void hard(){
@@ -365,6 +383,8 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         float previousHeight = 20000;
         float smallestX = 0;
         float smallestY = 0;
+        float previousArea = 4000000;
+        float left = 1300;
         // Iterate through list and call a function to display info for each recognized object.
         for (Recognition myTfodRecognition_item : myTfodRecognitions) {
             myTfodRecognition = myTfodRecognition_item;
@@ -383,26 +403,37 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
             telemetry.addData("- Size", JavaUtil.formatNumber(myTfodRecognition.getWidth(), 0) + " x " + JavaUtil.formatNumber(myTfodRecognition.getHeight(), 0));
             float currentWidth = myTfodRecognition.getWidth();
             float currentHeight = myTfodRecognition.getHeight();
-            if (currentWidth < previousWidth){
+            float currentArea = currentHeight * currentWidth;
+            if (currentArea < previousArea && currentArea < 25000) {
                 previousWidth = currentWidth;
                 previousHeight = currentHeight;
+                previousArea = currentArea;
                 smallestX = x;
                 smallestY = y;
+                left = myTfodRecognition.getLeft();
             }
 
         }
 
-        telemetry.addData("- SmallestX", JavaUtil.formatNumber(smallestX, 0) );
-        if (smallestX > 100 && smallestX < 450) {
-            position = 2;
-        } else if (smallestX >= 450) {
-            position = 3;
-        } else{
+        telemetry.addData("- Left", JavaUtil.formatNumber(left, 0) );
+        if (left < 200) {
             position = 1;
-        }//215 582
+        } else if (left >= 200 && left < 1200) {
+            position = 2;
+        }
+        else {
+            position = 3;
+        }
         telemetry.addData("- Scoring Location", JavaUtil.formatNumber(smallestX, 0) );
         telemetry.update();
         return position;
+    }
+    private TrajectoryVelocityConstraint setSpeed(int speed) {
+        return SampleMecanumDrive.getVelocityConstraint(speed, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+    }
+
+    private TrajectoryAccelerationConstraint setAccelatation() {
+        return SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
     }
 
 

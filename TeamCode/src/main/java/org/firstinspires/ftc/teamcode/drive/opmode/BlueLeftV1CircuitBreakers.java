@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -33,6 +36,7 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
     TfodProcessor myTfodProcessor;
     private Servo Dicky;
     private Servo DroneLauncber;
+    private Servo DroneWrist;
     private DcMotor Intake;
     private DcMotor RightFront;
     private DcMotor RightBack;
@@ -46,6 +50,7 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         LeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
         LeftFront = hardwareMap.get(DcMotor.class, "LeftFront");
         BoxWrist = hardwareMap.get(Servo.class, "BoxWrist");
+        DroneWrist = hardwareMap.get(Servo.class, "DroneWrist");
         LeftBox = hardwareMap.get(Servo.class, "LeftBox");
         RightBox = hardwareMap.get(Servo.class, "RightBox");
         Dicky = hardwareMap.get(Servo.class,"Dicky");
@@ -63,8 +68,9 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         BoxWrist.setPosition(0.14);
         Dicky.setPosition(0);
         LeftBox.setPosition(1);
-        RightBox.setPosition(0.7);
-        DroneLauncber.setPosition(0.5);
+        RightBox.setPosition(0.96);
+        DroneLauncber.setPosition(1);
+        DroneWrist.setPosition(0);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(65,-34, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
@@ -76,15 +82,7 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         telemetry.addData(">", "Touch Play to start OpMode");
         telemetry.update();
         List<Recognition> myTfodRecognitions = null;
-        /*while (true) {
-            myTfodRecognitions = myTfodProcessor.getRecognitions();
-            int noOfObjects = myTfodRecognitions.size();
-            if (noOfObjects >= 0) {
-                break;
-            }
-            sleep(1000);
-            telemetry.addLine("Waiting to detect");
-        }*/
+
         int position = -1;
         //Test position
         int degree = 0;
@@ -113,9 +111,9 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
     }
 
     private void left(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(46, -49, Math.toRadians(150)))
+                .lineToLinearHeading(new Pose2d(44, -48, Math.toRadians(150)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
         hard();
@@ -123,18 +121,25 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
 //        sleep(800);
 //        Intake.setPower(0);
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDropingPose.end())
-                .lineToLinearHeading(new Pose2d(44.0, -70.69, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(43.00069, -67, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
+        changingLinearSlides(1000,0.8,true, false);
 
-        changingLinearSlides(1000,0.8,true, true);
+        TrajectorySequence forwarrrd = drive.trajectorySequenceBuilder(goToBoard.end())
+                .back(3, setSpeed(5), setAccelatation())
+        .build();
+        drive.followTrajectorySequence(forwarrrd);
+        LeftBox.setPosition(.81);
+        RightBox.setPosition(0.96);
+sleep(500);
+        changingLinearSlides(1300,0.8,true, false);
 
 
-
-        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
-                .forward(2.5)
+        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(forwarrrd.end())
+                .forward(4)
                 .strafeRight(20)
                 .addTemporalMarker(0.8, () -> {
                     resetStuff();
@@ -146,9 +151,9 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         telemetry.update();
     }
     private void middle(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(37.5,-32))
+                .lineTo(new Vector2d(35.5,-32))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
         hard();
@@ -157,20 +162,23 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
 //        Intake.setPower(0);
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(41, -69, Math.toRadians(93)))
+                .lineToLinearHeading(new Pose2d(39.25, -67, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
         changingLinearSlides(1000,0.8,true, false);
 
         TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(2)
+                .back(3,setSpeed(5),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBack);
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
+        sleep(500);
+        changingLinearSlides(1300,0.8,true, false);
 
 
-        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goToBoard.end())
+
+        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goBack.end())
                 .forward(2.5)
                 .strafeRight(25)
                 .addTemporalMarker(0.5, () -> {
@@ -183,9 +191,10 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         telemetry.update();
     }
     private void right(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(43, -26, Math.toRadians(143)))
+                .lineToLinearHeading(new Pose2d(35, -33, Math.toRadians(90)))
+                .forward(3)
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
         hard();
@@ -194,16 +203,19 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
 //        Intake.setPower(0);
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(32, -70, Math.toRadians(93)))
+                .lineToLinearHeading(new Pose2d(32, -68, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
-        changingLinearSlides(1200,0.8,true, false);
+        changingLinearSlides(1000,0.8,true, false);
         TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(2)
+                .back(1.5,setSpeed(5),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBack);
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
+        sleep(499);
+        changingLinearSlides(1300,0.8,true, true);
+
 
 
 
@@ -242,7 +254,7 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         RightLinearSlide.setPower(power);
         RightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if(openWrist) {
-            BoxWrist.setPosition(0.45);
+            BoxWrist.setPosition(0.43);
             sleep(300);
         }
         else{
@@ -343,6 +355,8 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         float previousHeight = 20000;
         float smallestX = 0;
         float smallestY = 0;
+        float previousArea = 4000000;
+        float left = 1300;
         // Iterate through list and call a function to display info for each recognized object.
         for (Recognition myTfodRecognition_item : myTfodRecognitions) {
             myTfodRecognition = myTfodRecognition_item;
@@ -361,18 +375,24 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
             telemetry.addData("- Size", JavaUtil.formatNumber(myTfodRecognition.getWidth(), 0) + " x " + JavaUtil.formatNumber(myTfodRecognition.getHeight(), 0));
             float currentWidth = myTfodRecognition.getWidth();
             float currentHeight = myTfodRecognition.getHeight();
-            if (currentWidth < previousWidth){
+            float currentArea = currentHeight * currentWidth;
+            if (currentArea < previousArea && currentArea < 25000) {
                 previousWidth = currentWidth;
                 previousHeight = currentHeight;
+                previousArea = currentArea;
                 smallestX = x;
                 smallestY = y;
+                left = myTfodRecognition.getLeft();
             }
-
+            telemetry.addData("- Left", JavaUtil.formatNumber(left, 0));
         }
-        if (smallestX < 150) {
+        if (left < 250) {
             position = 1;
-        } else if (smallestX >= 150 && smallestX < 450) {
+        } else if (left >= 250 && left < 1200) {
             position = 2;
+        }
+        else {
+            position = 3;
         }
 
 
@@ -388,7 +408,13 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         Dicky.setPosition(0);
         sleep(100);
     }
+    private TrajectoryVelocityConstraint setSpeed(int speed) {
+        return SampleMecanumDrive.getVelocityConstraint(speed, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+    }
 
+    private TrajectoryAccelerationConstraint setAccelatation() {
+        return SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
+    }
 
 
 }

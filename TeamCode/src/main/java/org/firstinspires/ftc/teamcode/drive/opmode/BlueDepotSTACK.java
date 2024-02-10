@@ -34,6 +34,8 @@ public class BlueDepotSTACK extends LinearOpMode {
     private Servo BoxWrist;
     private Servo LeftBox;
 
+    private Servo DroneWrist;
+
     private Servo Dicky;
     private Servo RightBox;
     private Servo DroneLauncber;
@@ -55,6 +57,7 @@ public class BlueDepotSTACK extends LinearOpMode {
         LeftBox = hardwareMap.get(Servo.class, "LeftBox");
         RightBox = hardwareMap.get(Servo.class, "RightBox");
         DroneLauncber = hardwareMap.get(Servo.class, "DroneLauncber");
+        DroneWrist = hardwareMap.get(Servo.class, "DroneWrist");
         Intake = hardwareMap.get(DcMotor.class, "Intake");
         Dicky = hardwareMap.get(Servo.class,"Dicky");
         RightFront = hardwareMap.get(DcMotor.class, "RightFront");
@@ -67,7 +70,8 @@ public class BlueDepotSTACK extends LinearOpMode {
         LeftFront.setDirection(DcMotor.Direction.REVERSE);
         RightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
         BoxWrist.setPosition(0.14);
-        DroneLauncber.setPosition(0.5);
+        DroneLauncber.setPosition(1);
+        DroneWrist.setPosition(0);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Dicky.setPosition(0);
         LeftBox.setPosition(1);
@@ -86,24 +90,19 @@ public class BlueDepotSTACK extends LinearOpMode {
         telemetry.update();
         List<Recognition> myTfodRecognitions = null;
         int position = -1;
-        while (true) {
-            myTfodRecognitions = myTfodProcessor.getRecognitions();
-            int noOfObjects = myTfodRecognitions.size();
-            if (noOfObjects >= 0) {
-                break;
-            }
-            sleep(1000);
-            telemetry.addLine("Waiting to detect");
-        }
-
+        int i = 3;
         //Test position
         int degree = 0;
         waitForStart();
-        while (position < 0) {
+        while (position < 0 && i >0 ) {
             sleep(1000);
+            telemetry.addData("Sleeping..", i);
             myTfodRecognitions = myTfodProcessor.getRecognitions();
-            telemetry.addData("what opject", getPosition(myTfodRecognitions));
-            position = getPosition(myTfodRecognitions);
+            if (myTfodRecognitions!= null && myTfodRecognitions.size() > 0) {
+                position = getPosition(myTfodRecognitions);
+                telemetry.addData("what opjject", position);
+            }
+            i-=1;
             telemetry.update();
         }
         if(position == 1){
@@ -117,9 +116,9 @@ public class BlueDepotSTACK extends LinearOpMode {
     }
 
     private void rightSide(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.49);
         TrajectorySequence drop = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(32, 33, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(32, 54, Math.toRadians(270)))
                 .build();
         drive.followTrajectorySequence(drop);
         hard();
@@ -128,24 +127,25 @@ public class BlueDepotSTACK extends LinearOpMode {
         //Intake.setPower(0);
 
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(drop.end())
-                .lineToLinearHeading(new Pose2d(14, 30, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(14, 51, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
 
 
         TrajectorySequence goToPickUpStack = drive.trajectorySequenceBuilder(goToDropingPose.end())
-                .lineTo(new Vector2d(14,52.8),setSpeed(10),setAccelatation())
+                .lineTo(new Vector2d(17.5,56),setSpeed(10),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToPickUpStack);
-        Dicky.setPosition(0.54);
+        Dicky.setPosition(0.45);
+        sleep(500);
 
         TrajectorySequence pickUpExtra = drive.trajectorySequenceBuilder(goToPickUpStack.end())
-                .back(8, setSpeed(25),setAccelatation())
+                .back(8)
                 .addTemporalMarker(0.2,() ->{
-                    Dicky.setPosition(0.54);
+                    Dicky.setPosition(0.45);
                 })
                 .addTemporalMarker(0.3,() ->{
-                    Dicky.setPosition(0.54);
+                    Dicky.setPosition(0.45);
                 })
                 .addTemporalMarker(0.45, () -> {
                     Intake.setPower(-0.7);
@@ -154,39 +154,31 @@ public class BlueDepotSTACK extends LinearOpMode {
                 .addTemporalMarker(1.5, () -> {
                     Intake.setPower(-0.7);
                 })
-                .lineToLinearHeading(new Pose2d(13.85,48.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(13.5,53.5, Math.toRadians(90)))
                 //.forward(6.5, setSpeed(13), setAccelatation())
                 .build();
         drive.followTrajectorySequence(pickUpExtra);
         Dicky.setPosition(0);
 
         TrajectorySequence goToStartBridge = drive.trajectorySequenceBuilder(pickUpExtra.end())
-                .lineTo(new Vector2d(12,-36))
-                .lineTo(new Vector2d(12,-48))
+                .lineTo(new Vector2d(11,-36))
+                .lineTo(new Vector2d(11,-46))
                 //.lineTo(new Vector2d(31,-58))
                 .build();
         drive.followTrajectorySequence(goToStartBridge);
         RightBox.setPosition(0.7);
         LeftBox.setPosition(1);
+
         changingLinearSlides(1250,0.8,true, false);
         TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(goToStartBridge.end())
-                        .lineTo(new Vector2d(29, -56))
+                        .lineTo(new Vector2d(31, -55))
                         .back(2)
                         .build();
         drive.followTrajectorySequence(goToBoardAfterSlides);
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
+        sleep(500);
 
-        //changingLinearSlides(1250,0.8,true, true);
-//        TrajectorySequence strafeLeft = drive.trajectorySequenceBuilder(goToBoardAfterSlides.end())
-//                .forward(4)
-//                .strafeLeft(22)
-//                .back(4)
-//                .addTemporalMarker(0.5, () ->{
-//                    resetStuff();
-//                })
-//                .build();
-//        drive.followTrajectorySequence(strafeLeft);
 
         TrajectorySequence forwarddd = drive.trajectorySequenceBuilder(goToBoardAfterSlides.end())
                 .forward(3)
@@ -203,9 +195,9 @@ public class BlueDepotSTACK extends LinearOpMode {
         telemetry.update();
     }
     private void middle(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(24.25, 46, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(23.5, 46, Math.toRadians(270)))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
@@ -213,26 +205,27 @@ public class BlueDepotSTACK extends LinearOpMode {
         //sleep(800);
         //Intake.setPower(0);
         hard();
-//mcdonads
+
         TrajectorySequence lineUp = drive.trajectorySequenceBuilder(goToDroppingPose.end())
                 .lineToLinearHeading(new Pose2d(17, 49, Math.toRadians(270)))
-                .lineToLinearHeading(new Pose2d(13, 46, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(14, 46, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(lineUp);
 
         TrajectorySequence goToPickUpStack = drive.trajectorySequenceBuilder(lineUp.end())
-                .lineTo(new Vector2d(16,57.0),setSpeed(10),setAccelatation())
+                .lineTo(new Vector2d(16.5,55),setSpeed(10),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToPickUpStack);
-        Dicky.setPosition(0.54);
-//suhurth vupplala
+        Dicky.setPosition(0.45);
+        sleep(500);
+
         TrajectorySequence pickUpExtra = drive.trajectorySequenceBuilder(goToPickUpStack.end())
                 .back(8, setSpeed(25),setAccelatation())
                 .addTemporalMarker(0.2,() ->{
-                    Dicky.setPosition(0.54);
+                    Dicky.setPosition(0.45);
                 })
                 .addTemporalMarker(0.3,() ->{
-                    Dicky.setPosition(0.54);
+                    Dicky.setPosition(0.45);
                 })
                 .addTemporalMarker(0.45, () -> {
                     Intake.setPower(-0.7);
@@ -251,19 +244,21 @@ public class BlueDepotSTACK extends LinearOpMode {
 
         TrajectorySequence goToStartBridge = drive.trajectorySequenceBuilder(pickUpExtra.end())
                 .lineTo(new Vector2d(12,36))
-                .lineTo(new Vector2d(12,-48))
+                .lineTo(new Vector2d(12,-46))
                 //.lineTo(new Vector2d(41,-57))
                 .build();
         drive.followTrajectorySequence(goToStartBridge);
         //stupid bozo
         changingLinearSlides(1250,0.8,true, false);
         TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(goToStartBridge.end())
-                .lineTo(new Vector2d(34, -55))
+                .lineTo(new Vector2d(35, -55))
                 .back(2)
                 .build();
         drive.followTrajectorySequence(goToBoardAfterSlides);
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
+
+        sleep(500);
 
 //
 //
@@ -315,29 +310,29 @@ public class BlueDepotSTACK extends LinearOpMode {
 //        telemetry.update();
     }
     private void left(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(34, 33, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(38, 34, Math.toRadians(250)))
                 .forward(4)
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
         hard();
         TrajectorySequence lineUp = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(13,46,Math.toRadians(90)))
-                .lineTo(new Vector2d(17.25,56.75),setSpeed(10),setAccelatation())
+                .lineToLinearHeading(new Pose2d(14,48,Math.toRadians(90)))
+                .lineTo(new Vector2d(16,53),setSpeed(10),setAccelatation())
                 .build();
         drive.followTrajectorySequence(lineUp);
-        Dicky.setPosition(0.54);
-        sleep(100);
+        Dicky.setPosition(0.45);
+        sleep(500);
 
 
         TrajectorySequence pickUpExtra = drive.trajectorySequenceBuilder(lineUp.end())
                 .back(8, setSpeed(25),setAccelatation())
                 .addTemporalMarker(0.2,() ->{
-                    Dicky.setPosition(0.54);
+                    Dicky.setPosition(0.45);
                 })
                 .addTemporalMarker(0.3,() ->{
-                    Dicky.setPosition(0.54);
+                    Dicky.setPosition(0.45);
                 })
                 .addTemporalMarker(0.45, () -> {
                     Intake.setPower(-0.7);
@@ -346,7 +341,7 @@ public class BlueDepotSTACK extends LinearOpMode {
                 .addTemporalMarker(1.5, () -> {
                     Intake.setPower(-0.7);
                 })
-                .lineToLinearHeading(new Pose2d(14,53.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(14,53, Math.toRadians(90)))
                 //.forward(6.5, setSpeed(13), setAccelatation())
                 .build();
         drive.followTrajectorySequence(pickUpExtra);
@@ -361,12 +356,13 @@ public class BlueDepotSTACK extends LinearOpMode {
 
         changingLinearSlides(1250,0.8,true, false);
         TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(goToStartBridge.end())
-                .lineTo(new Vector2d(39, -55))
+                .lineTo(new Vector2d(43, -55))
                 .back(2)
                 .build();
         drive.followTrajectorySequence(goToBoardAfterSlides);
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
+        sleep(500);
 
 //
 //
@@ -409,7 +405,7 @@ public class BlueDepotSTACK extends LinearOpMode {
         RightLinearSlide.setPower(power);
         RightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if(openWrist) {
-            BoxWrist.setPosition(0.45);
+            BoxWrist.setPosition(0.41);
             sleep(300);
         }
         else{
@@ -506,11 +502,13 @@ public class BlueDepotSTACK extends LinearOpMode {
         Recognition myTfodRecognition;
         float x = 1000;
         float y = 1000;
-        int position = 1;
+        int position = 3;
         float previousWidth = 20000;
         float previousHeight = 20000;
         float smallestX = 0;
         float smallestY = 0;
+        float previousArea = 4000000;
+        float left = 1300;
         float previousConfidence =0;
         // Iterate through list and call a function to display info for each recognized object.
         for (Recognition myTfodRecognition_item : myTfodRecognitions) {
@@ -530,25 +528,28 @@ public class BlueDepotSTACK extends LinearOpMode {
             telemetry.addData("- Size", JavaUtil.formatNumber(myTfodRecognition.getWidth(), 0) + " x " + JavaUtil.formatNumber(myTfodRecognition.getHeight(), 0));
             float currentWidth = myTfodRecognition.getWidth();
             float currentHeight = myTfodRecognition.getHeight();
-            if (currentWidth < previousWidth){
+            float currentArea = currentHeight * currentWidth;
+            if (currentArea < previousArea && currentArea < 25000) {
                 previousWidth = currentWidth;
                 previousHeight = currentHeight;
+                previousArea = currentArea;
                 smallestX = x;
                 smallestY = y;
+                left = myTfodRecognition.getLeft();
             }
 
 
-            float left = myTfodRecognition.getLeft();
             telemetry.addData("- Left", JavaUtil.formatNumber(left, 0));
-            if (smallestX > 100 && smallestX < 350) {
-                position = 2;
-            } else if (smallestX >= 350) {
-                position = 3;
-            } else{
-                position = 1;
-            }//215 582
-            telemetry.addData("- Position", JavaUtil.formatNumber(smallestX, 0) );
-            telemetry.update();
+        if (left < 250) {
+            position = 1;
+        } else if (left >= 250 && left < 1200) {
+            position = 2;
+        }
+        else {
+            position = 3;
+        }
+        telemetry.addData("- Position", JavaUtil.formatNumber(smallestX, 0) );
+        telemetry.update();
         }
 
 
@@ -557,7 +558,7 @@ public class BlueDepotSTACK extends LinearOpMode {
     }
 
     private void soft(){
-        Dicky.setPosition(0.45);
+        Dicky.setPosition(0.51);
         sleep(100);
     }
     private void hard(){

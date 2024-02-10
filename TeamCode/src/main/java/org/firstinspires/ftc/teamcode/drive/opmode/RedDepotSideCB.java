@@ -28,6 +28,7 @@ public class RedDepotSideCB extends LinearOpMode {
     private DcMotor RightLinearSlide;
     private DcMotor LeftBack;
     private DcMotor LeftFront;
+    private Servo DroneWrist;
 
     boolean USE_WEBCAM;
     private Servo BoxWrist;
@@ -53,6 +54,7 @@ public class RedDepotSideCB extends LinearOpMode {
         LeftBox = hardwareMap.get(Servo.class, "LeftBox");
         RightBox = hardwareMap.get(Servo.class, "RightBox");
         DroneLauncber = hardwareMap.get(Servo.class, "DroneLauncber");
+        DroneWrist = hardwareMap.get(Servo.class, "DroneWrist");
         Intake = hardwareMap.get(DcMotor.class, "Intake");
         RightFront = hardwareMap.get(DcMotor.class, "RightFront");
         RightBack = hardwareMap.get(DcMotor.class, "RightBack");
@@ -67,7 +69,7 @@ public class RedDepotSideCB extends LinearOpMode {
         BoxWrist.setPosition(0.14);
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
-        DroneLauncber.setPosition(0.5);
+        DroneLauncber.setPosition(1);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Dicky.setPosition(0);
         Pose2d startPose = new Pose2d(-65,34, Math.toRadians(0));
@@ -117,7 +119,7 @@ public class RedDepotSideCB extends LinearOpMode {
     }
 
     private void leftSide(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-27, 30, Math.toRadians(90)))
                 .build();
@@ -161,7 +163,7 @@ public class RedDepotSideCB extends LinearOpMode {
         telemetry.update();
     }
     private void middle(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-24, 45, Math.toRadians(-90)))
                 .build();
@@ -209,7 +211,7 @@ public class RedDepotSideCB extends LinearOpMode {
         telemetry.update();
     }
     private void right(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.6);
+        Dicky.setPosition(0.51);
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-40, 27, Math.toRadians(-40)))
                 .build();
