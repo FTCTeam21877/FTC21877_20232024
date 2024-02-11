@@ -164,14 +164,14 @@ public class RedDepotSTACK extends LinearOpMode {
 
         TrajectorySequence goToStartBridge = drive.trajectorySequenceBuilder(pickUpExtra.end())
                 .lineTo(new Vector2d(-12,36))
-                .lineTo(new Vector2d(-12,-46))
+                .lineTo(new Vector2d(-12,-44))
                 //.lineTo(new Vector2d(41,-57))
                 .build();
         drive.followTrajectorySequence(goToStartBridge);
 
         changingLinearSlides(1100,0.8,true, false);
         TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(goToStartBridge.end())
-                .lineTo(new Vector2d(-30, -55))
+                .lineTo(new Vector2d(-31, -55))
                 .back(2)
                 .build();
         drive.followTrajectorySequence(goToBoardAfterSlides);
@@ -237,7 +237,7 @@ public class RedDepotSTACK extends LinearOpMode {
                 .addTemporalMarker(1.5, () -> {
                     Intake.setPower(-0.7);
                 })
-                .lineToLinearHeading(new Pose2d(-12,53, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-14,53, Math.toRadians(90)))
                 //.forward(6.5, setSpeed(13), setAccelatation())
                 .build();
         drive.followTrajectorySequence(pickUpExtra);
@@ -251,7 +251,7 @@ public class RedDepotSTACK extends LinearOpMode {
 
         changingLinearSlides(1100,0.8,true, false);
         TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(goToStartBridge.end())
-                .lineTo(new Vector2d(-35, -55))
+                .lineTo(new Vector2d(-37, -54))
                 .back(2)
                 .build();
         drive.followTrajectorySequence(goToBoardAfterSlides);
@@ -312,7 +312,7 @@ public class RedDepotSTACK extends LinearOpMode {
                 .addTemporalMarker(1.5, () -> {
                     Intake.setPower(-0.7);
                 })
-                .lineToLinearHeading(new Pose2d(-12.5,53, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-13.5,53, Math.toRadians(90)))
                 //.forward(6.5, setSpeed(13), setAccelatation())
                 .build();
         drive.followTrajectorySequence(pickUpExtra);
@@ -506,7 +506,8 @@ public class RedDepotSTACK extends LinearOpMode {
                 smallestY = y;
                 left = myTfodRecognition.getLeft();
             }
-            telemetry.addData("- Left", JavaUtil.formatNumber(left, 0));
+
+        }
         if (left < 200) {
             position = 1;
         } else if (left >= 200 && left < 1200) {
@@ -515,10 +516,9 @@ public class RedDepotSTACK extends LinearOpMode {
         else {
             position = 3;
         }
-            telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
-            telemetry.update();
-        }
+        telemetry.addData("- Left", JavaUtil.formatNumber(left, 0));
 
+        telemetry.addData("- Position", JavaUtil.formatNumber(position, 0) );
 
 
         return position;
