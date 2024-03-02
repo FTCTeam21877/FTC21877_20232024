@@ -77,7 +77,7 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
         LeftFront.setDirection(DcMotor.Direction.REVERSE);
         RightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
         BoxWrist.setPosition(0.14);
-        cheeksOpen();
+        cheeksSpread();
         LeftBox.setPosition(1);
         RightBox.setPosition(0.96);
         DroneLauncber.setPosition(1);
@@ -132,119 +132,42 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
     }
 
     private void leftSide(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.51);
+        cheeksMiddle();
+        cheeksClosed();
 
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-29, 32.39, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
 
-        hard();
+        cheeksSpread();
 
         TrajectorySequence lineUp = drive.trajectorySequenceBuilder(goToDropingPose.end())
                 .lineToLinearHeading(new Pose2d(-14, 34, Math.toRadians(90)))
+                .lineTo(new Vector2d(-12.5,54.5),setSpeed(15),setAccelatation())
                 .build();
         drive.followTrajectorySequence(lineUp);
 
-        TrajectorySequence goToPickUpStack = drive.trajectorySequenceBuilder(lineUp.end())
-                .lineTo(new Vector2d(-12.5,54.5),setSpeed(10),setAccelatation())
-                .build();
-        drive.followTrajectorySequence(goToPickUpStack);
-        Dicky.setPosition(0.45);
-
-        TrajectorySequence pickUpExtra = drive.trajectorySequenceBuilder(goToPickUpStack.end())
-                .back(8, setSpeed(25),setAccelatation())
-                .addTemporalMarker(0.2,() ->{
-                    Dicky.setPosition(0.45);
-                })
-                .addTemporalMarker(0.3,() ->{
-                    Dicky.setPosition(0.45);
-                })
-                .addTemporalMarker(0.45, () -> {
-                    Intake.setPower(-0.7);
-                    hard();
-                })
-                .addTemporalMarker(1.5, () -> {
-                    Intake.setPower(-0.7);
-                })
-                .lineToLinearHeading(new Pose2d(-13,53, Math.toRadians(90)))
-                //.forward(6.5, setSpeed(13), setAccelatation())
-                .build();
-        drive.followTrajectorySequence(pickUpExtra);
-        Dicky.setPosition(0);
-
-        TrajectorySequence goToStartBridge = drive.trajectorySequenceBuilder(pickUpExtra.end())
-                .lineTo(new Vector2d(-12,36))
-                .lineTo(new Vector2d(-12,-44))
-                //.lineTo(new Vector2d(41,-57))
-                .build();
-        drive.followTrajectorySequence(goToStartBridge);
-
-        changingLinearSlides(1100,0.8,true, false);
-        TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(goToStartBridge.end())
-                .lineTo(new Vector2d(-31, -55))
-                .back(2)
-                .build();
-        drive.followTrajectorySequence(goToBoardAfterSlides);
-        LeftBox.setPosition(0.81);
-        RightBox.setPosition(0.96);
-        sleep(500);
-        changingLinearSlides(1300,0.8,true, false);
-
-        TrajectorySequence forwarddd = drive.trajectorySequenceBuilder(goToBoardAfterSlides.end())
-                .forward(3)
-                .build();
-        drive.followTrajectorySequence(forwarddd);
-        resetStuff();
-
-
-        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(forwarddd.end())
-                .strafeRight(20)
-                .addTemporalMarker(0.5, () -> {
-                    resetStuff();
-                })
-                .build();
-        drive.followTrajectorySequence(strafeRight);
-
-        telemetry.addData("Left  Slide Position", LeftLinearSlide.getCurrentPosition());
-        telemetry.update();
-    }
-
-    private void middle(SampleMecanumDrive drive, Pose2d startPose) {
-        cheeksMiddle();
-        cheeksClosed();
-        TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-26, 45, Math.toRadians(-90)))
-                .build();
-        drive.followTrajectorySequence(goToDroppingPose);
-
-        cheeksOpen();
-        TrajectorySequence lineUpWithStackee = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .back(4)
-                .lineToLinearHeading(new Pose2d(-15.9,53,Math.toRadians(90)))
-                .forward(1.5,setSpeed(15),setAccelatation())
-                .build();
-        drive.followTrajectorySequence(lineUpWithStackee);
         Intake.setPower(-1);
         cheeksClosed();
         LeftBox.setPosition(0.81);
         //RightBox.setPosition(0.96);
         sleep(300);
-        cheeksOpen();
-        TrajectorySequence gotoBoard = drive.trajectorySequenceBuilder(lineUpWithStackee.end())
+        cheeksSpread();
+
+        TrajectorySequence goToStartBridge = drive.trajectorySequenceBuilder(lineUp.end())
                 .back(4)
-                .splineToConstantHeading(new Vector2d(-40,-49),Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-35,-49),Math.toRadians(180))
+                //.lineTo(new Vector2d(41,-57))
                 .build();
-        drive.followTrajectorySequence(gotoBoard);
-
-
+        drive.followTrajectorySequence(goToStartBridge);
 
         changingLinearSlides(1100,0.8,true, false);
-        sleep(350);
 
-        TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(gotoBoard.end())
-              //  .lineTo(new Vector2d(-39, -54))
-                .lineToLinearHeading(new Pose2d(-39,-56,Math.toRadians(90)),setSpeed(5),setAccelatation())
+
+        TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(goToStartBridge.end())
+                //  .lineTo(new Vector2d(-39, -54))
+                .lineToLinearHeading(new Pose2d(-35,-56,Math.toRadians(90)),setSpeed(5),setAccelatation())
                 .build();
         while (backDistanceSensor.getDistance(DistanceUnit.INCH) > 2.5) {
             LeftBack.setPower(-0.1);
@@ -263,8 +186,9 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
         sleep(200);
-        drive.setPoseEstimate(new Pose2d(-39,-56,Math.toRadians(90)));
-        TrajectorySequence forwarddd = drive.trajectorySequenceBuilder(new Pose2d(-39,-56,Math.toRadians(90)))
+        Pose2d firstBoardPos  = new Pose2d(-35,-56,Math.toRadians(90));
+        drive.setPoseEstimate(firstBoardPos);
+        TrajectorySequence forwarddd = drive.trajectorySequenceBuilder(firstBoardPos)
                 .forward(4)
                 .addTemporalMarker(.5,() ->{
                     resetStuff();
@@ -273,11 +197,11 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
         drive.followTrajectorySequence(forwarddd);
 
         TrajectorySequence goBackToStack = drive.trajectorySequenceBuilder(forwarddd.end())
-                .splineToConstantHeading(new Vector2d(-9.9,20),Math.toRadians(120))
-             //   .splineToConstantHeading(new Vector2d(-12.9,0),Math.toRadians(120))
-                .lineToLinearHeading(new Pose2d(-18.9,47,Math.toRadians(90)))
+                .splineToConstantHeading(new Vector2d(-10,20),Math.toRadians(125))
+                //   .splineToConstantHeading(new Vector2d(-12.9,0),Math.toRadians(120))
+                .lineToLinearHeading(new Pose2d(-20,47,Math.toRadians(90)))
                 .forward(1.5,setSpeed(15),setAccelatation())
-                        .build();
+                .build();
         drive.followTrajectorySequence(goBackToStack);
         Intake.setPower(-1);
         LeftBox.setPosition(0.81);
@@ -285,18 +209,18 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
         cheeksClosed();
 
         sleep(300);
-        cheeksOpen();
+        cheeksSpread();
         sleep(300);
         cheeksClosed();
         sleep(300);
-        cheeksOpen();
+        cheeksSpread();
         sleep(200);
 
         //Second Cycle
 
         TrajectorySequence gotoBoard2Point0 = drive.trajectorySequenceBuilder(goBackToStack.end())
                 .back(4)
-                .splineToConstantHeading(new Vector2d(-41,-52),Math.toRadians(170))
+                .splineToConstantHeading(new Vector2d(-35,-52),Math.toRadians(170))
                 .build();
         drive.followTrajectorySequence(gotoBoard2Point0);
         changingLinearSlides(1500,0.8,true, false);
@@ -304,8 +228,8 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
 
 
         TrajectorySequence goToBoardAfterSlides2point0 = drive.trajectorySequenceBuilder(gotoBoard2Point0.end())
-                .lineTo(new Vector2d(-39, -57))
-                .lineToLinearHeading(new Pose2d(-38,-60,Math.toRadians(90)),setSpeed(5),setAccelatation())
+                .lineTo(new Vector2d(-35, -57))
+                .lineToLinearHeading(new Pose2d(-35,-60,Math.toRadians(90)),setSpeed(5),setAccelatation())
                 .build();
         //drive.followTrajectorySequence(goToBoardAfterSlides2point0);
         while (backDistanceSensor.getDistance(DistanceUnit.INCH) > 2.5) {
@@ -325,8 +249,8 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
         sleep(400);
-        drive.setPoseEstimate(new Pose2d(-39,-56,Math.toRadians(90)));
-        TrajectorySequence forwarddd2dot0 = drive.trajectorySequenceBuilder(new Pose2d(-39,-56,Math.toRadians(90)))
+        drive.setPoseEstimate(new Pose2d(-35,-56,Math.toRadians(90)));
+        TrajectorySequence forwarddd2dot0 = drive.trajectorySequenceBuilder(new Pose2d(-35,-56,Math.toRadians(90)))
                 .forward(4)
                 .build();
         drive.followTrajectorySequence(forwarddd2dot0);
@@ -335,8 +259,8 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
 
         //third cycle
         TrajectorySequence goBackToStack3dot0 = drive.trajectorySequenceBuilder(forwarddd2dot0.end())
-                .splineToConstantHeading(new Vector2d(-11,20),Math.toRadians(120))
-                .lineToLinearHeading(new Pose2d(-18.9,49,Math.toRadians(90)))
+                .splineToConstantHeading(new Vector2d(-11,20),Math.toRadians(130))
+                .lineToLinearHeading(new Pose2d(-20,49,Math.toRadians(90)))
                 .forward(1.9,setSpeed(10),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBackToStack3dot0);
@@ -345,7 +269,7 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
         RightBox.setPosition(0.96);
         cheeksClosed();
         sleep(200);
-        cheeksOpen();
+        cheeksSpread();
         TrajectorySequence gotopark = drive.trajectorySequenceBuilder(goBackToStack3dot0.end())
                 .forward(1)
                 .lineTo(new Vector2d(-18.9,-60))
@@ -374,76 +298,344 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
         telemetry.addData("Left  Slide Position", LeftLinearSlide.getCurrentPosition());
         telemetry.update();
     }
+
+    private void middle(SampleMecanumDrive drive, Pose2d startPose) {
+        cheeksMiddle();
+        cheeksClosed();
+        TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(-27, 44, Math.toRadians(-90)))
+                .build();
+        drive.followTrajectorySequence(goToDroppingPose);
+
+        cheeksSpread();
+        TrajectorySequence lineUpWithStackee = drive.trajectorySequenceBuilder(goToDroppingPose.end())
+                .back(5)
+                .lineToLinearHeading(new Pose2d(-15.9,51.5,Math.toRadians(90)), setSpeed(50),setAccelatation())
+                .lineToLinearHeading(new Pose2d(-17.5,57,Math.toRadians(90)),setSpeed(10),setAccelatation())
+                .build();
+        drive.followTrajectorySequence(lineUpWithStackee);
+        Intake.setPower(-1);
+        cheeksClosed();
+        LeftBox.setPosition(0.81);
+        //RightBox.setPosition(0.96);
+        sleep(300);
+        cheeksSpread();
+        TrajectorySequence gotoBoard = drive.trajectorySequenceBuilder(lineUpWithStackee.end())
+                .back(4)
+                .splineToConstantHeading(new Vector2d(-37,-49),Math.toRadians(180))
+                .build();
+        drive.followTrajectorySequence(gotoBoard);
+
+
+
+        changingLinearSlides(1100,0.8,true, false);
+        sleep(350);
+
+        double distanceFromBoard = backDistanceSensor.getDistance(DistanceUnit.INCH) - 2.5;
+
+        TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(gotoBoard.end())
+              //  .lineTo(new Vector2d(-39, -54))
+                .lineToLinearHeading(new Pose2d(-37,-50 - distanceFromBoard,Math.toRadians(90)),setSpeed(5),setAccelatation())
+                .build();
+//        while (backDistanceSensor.getDistance(DistanceUnit.INCH) > 2.5) {
+//            LeftBack.setPower(-0.1);
+//            LeftFront.setPower(-0.1);
+//            RightBack.setPower(-0.1);
+//            RightFront.setPower(-0.1);
+//            telemetry.addData("DistanceFront", frontDistanceSensor.getDistance(DistanceUnit.INCH));
+//            telemetry.addData("DistanceBack", backDistanceSensor.getDistance(DistanceUnit.INCH));
+//            telemetry.update();
+//        }
+//        LeftBack.setPower(0);
+//        LeftFront.setPower(0);
+//        RightBack.setPower(0);
+//        RightFront.setPower(0);
+        drive.followTrajectorySequence(goToBoardAfterSlides);
+        LeftBox.setPosition(0.81);
+        RightBox.setPosition(0.96);
+        sleep(200);
+//        Pose2d firstBoardPos  = new Pose2d(-40,-56,Math.toRadians(90));
+//        drive.setPoseEstimate(firstBoardPos);
+        TrajectorySequence forwarddd = drive.trajectorySequenceBuilder(goToBoardAfterSlides.end())
+                .forward(4)
+                .addTemporalMarker(.5,() ->{
+                    resetStuff();
+                })
+                .build();
+        drive.followTrajectorySequence(forwarddd);
+//
+//        TrajectorySequence goBackToStack = drive.trajectorySequenceBuilder(forwarddd.end())
+//                .setTangent(Math.toRadians(20))
+//                .splineToConstantHeading(new Vector2d(-17,50),Math.toRadians(100))
+//             //   .splineToConstantHeading(new Vector2d(-12.9,0),Math.toRadians(120))
+//                .lineToLinearHeading(new Pose2d(-19,55,Math.toRadians(90)))
+//                .forward(1.5,setSpeed(15),setAccelatation())
+//                        .build();
+//        drive.followTrajectorySequence(goBackToStack);
+//        Intake.setPower(-1);
+//        LeftBox.setPosition(0.81);
+//        RightBox.setPosition(0.96);
+//        cheeksClosed();
+//
+//        sleep(300);
+//        cheeksSpread();
+//        sleep(300);
+//        cheeksClosed();
+//        sleep(300);
+//        cheeksSpread();
+//        sleep(200);
+//
+//        //Second Cycle
+//
+//        TrajectorySequence gotoBoard2Point0 = drive.trajectorySequenceBuilder(goBackToStack.end())
+//                .back(4)
+//                .splineToConstantHeading(new Vector2d(-41,-52),Math.toRadians(180))
+//                .build();
+//        drive.followTrajectorySequence(gotoBoard2Point0);
+//        changingLinearSlides(1200,0.8,true, false);
+//
+//
+//        distanceFromBoard = backDistanceSensor.getDistance(DistanceUnit.INCH) - 2.5;
+//        TrajectorySequence goToBoardAfterSlides2point0 = drive.trajectorySequenceBuilder(gotoBoard2Point0.end())
+//
+//                .lineToLinearHeading(new Pose2d(-41,-52 - distanceFromBoard,Math.toRadians(90)),setSpeed(7),setAccelatation())
+//                .build();
+//        drive.followTrajectorySequence(goToBoardAfterSlides2point0);
+////        while (backDistanceSensor.getDistance(DistanceUnit.INCH) > 2.5) {
+////            LeftBack.setPower(-0.1);
+////            LeftFront.setPower(-0.1);
+////            RightBack.setPower(-0.1);
+////            RightFront.setPower(-0.1);
+////            telemetry.addData("DistanceFront", frontDistanceSensor.getDistance(DistanceUnit.INCH));
+////            telemetry.addData("DistanceBack", backDistanceSensor.getDistance(DistanceUnit.INCH));
+////            telemetry.update();
+////        }
+////        LeftBack.setPower(0);
+////        LeftFront.setPower(0);
+////        RightBack.setPower(0);
+////        RightFront.setPower(0);
+//
+//        LeftBox.setPosition(0.81);
+//        RightBox.setPosition(0.96);
+//        sleep(300);
+//        //drive.setPoseEstimate(new Pose2d(-41,-56,Math.toRadians(90)));
+//        TrajectorySequence forwarddd2dot0 = drive.trajectorySequenceBuilder(goToBoardAfterSlides2point0.end())
+//                .forward(4)
+//                .build();
+//        drive.followTrajectorySequence(forwarddd2dot0);
+//        resetStuff();
+//
+//
+//
+//        //third cycle
+//        TrajectorySequence goBackToStack3dot0 = drive.trajectorySequenceBuilder(forwarddd2dot0.end())
+////                .setTangent(Math.toRadians(30))
+////                .splineToConstantHeading(new Vector2d(-11,20),Math.toRadians(130))
+//                .setTangent(Math.toRadians(20))
+//                .splineToConstantHeading(new Vector2d(-12,50),Math.toRadians(100))
+//                .lineToLinearHeading(new Pose2d(-15,55,Math.toRadians(90)))
+//                .forward(2.5,setSpeed(10),setAccelatation())
+//                .build();
+//        drive.followTrajectorySequence(goBackToStack3dot0);
+//        Intake.setPower(-1);
+//        LeftBox.setPosition(0.81);
+//        RightBox.setPosition(0.96);
+//
+//        TrajectorySequence gotopark = drive.trajectorySequenceBuilder(goBackToStack3dot0.end())
+//                .forward(1)
+//                .lineTo(new Vector2d(-18.9,-60))
+//                .build();
+//        drive.followTrajectorySequence(gotopark);
+//
+
+
+
+
+
+
+//
+//
+//
+//        resetStuff();
+//
+//        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(forwarddd.end())
+//                .strafeRight(20)
+//                .addTemporalMarker(0.5, () -> {
+//                    resetStuff();
+//                })
+//                .build();
+//        drive.followTrajectorySequence(strafeRight);
+
+        telemetry.addData("Left  Slide Position", LeftLinearSlide.getCurrentPosition());
+        telemetry.update();
+    }
     private void right(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.51);
+        cheeksMiddle();
+        cheeksClosed();
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-36, 27, Math.toRadians(-50)))
                 .forward(1)
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
-        hard();
+        cheeksSpread();
 
         TrajectorySequence lineUp = drive.trajectorySequenceBuilder(goToDroppingPose.end())
                 .back(3)
                 .lineToLinearHeading(new Pose2d(-11,48,Math.toRadians(90)))
-                .lineTo(new Vector2d(-12,54),setSpeed(10),setAccelatation())
+                .lineTo(new Vector2d(-12,54),setSpeed(15),setAccelatation())
                 .build();
         drive.followTrajectorySequence(lineUp);
-        Dicky.setPosition(0.45);
-        sleep(100);
 
-        TrajectorySequence pickUpExtra = drive.trajectorySequenceBuilder(lineUp.end())
-                .back(8, setSpeed(25),setAccelatation())
-                .addTemporalMarker(0.2,() ->{
-                    Dicky.setPosition(0.45);
-                })
-                .addTemporalMarker(0.3,() ->{
-                    Dicky.setPosition(0.45);
-                })
-                .addTemporalMarker(0.45, () -> {
-                    Intake.setPower(-0.7);
-                    hard();
-                })
-                .addTemporalMarker(1.5, () -> {
-                    Intake.setPower(-0.7);
-                })
-                .lineToLinearHeading(new Pose2d(-13.5,53, Math.toRadians(90)))
-                //.forward(6.5, setSpeed(13), setAccelatation())
-                .build();
-        drive.followTrajectorySequence(pickUpExtra);
-        Dicky.setPosition(0);
 
-        TrajectorySequence goToStartBridge = drive.trajectorySequenceBuilder(pickUpExtra.end())
-                .lineTo(new Vector2d(-12,36))
-                .lineTo(new Vector2d(-12,-48))
-                //.lineTo(new Vector2d(41,-57))
+
+        Intake.setPower(-1);
+        cheeksClosed();
+        LeftBox.setPosition(0.81);
+        //RightBox.setPosition(0.96);
+        sleep(300);
+        cheeksSpread();
+        TrajectorySequence gotoBoard = drive.trajectorySequenceBuilder(lineUp.end())
+                .back(4)
+                .splineToConstantHeading(new Vector2d(-45,-49),Math.toRadians(180))
                 .build();
-        drive.followTrajectorySequence(goToStartBridge);
+        drive.followTrajectorySequence(gotoBoard);
+
+
 
         changingLinearSlides(1100,0.8,true, false);
-        TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(goToStartBridge.end())
-                .lineTo(new Vector2d(-45, -55))
-                .back(2)
+        sleep(350);
+
+        TrajectorySequence goToBoardAfterSlides = drive.trajectorySequenceBuilder(gotoBoard.end())
+                //  .lineTo(new Vector2d(-39, -54))
+                .lineToLinearHeading(new Pose2d(-45,-56,Math.toRadians(90)),setSpeed(5),setAccelatation())
                 .build();
-        drive.followTrajectorySequence(goToBoardAfterSlides);
+        while (backDistanceSensor.getDistance(DistanceUnit.INCH) > 2.5) {
+            LeftBack.setPower(-0.1);
+            LeftFront.setPower(-0.1);
+            RightBack.setPower(-0.1);
+            RightFront.setPower(-0.1);
+            telemetry.addData("DistanceFront", frontDistanceSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("DistanceBack", backDistanceSensor.getDistance(DistanceUnit.INCH));
+            telemetry.update();
+        }
+        LeftBack.setPower(0);
+        LeftFront.setPower(0);
+        RightBack.setPower(0);
+        RightFront.setPower(0);
+        //drive.followTrajectorySequence(goToBoardAfterSlides);
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
-        sleep(500);
-        changingLinearSlides(1300,0.8,true, false);
-
-        TrajectorySequence forwarddd = drive.trajectorySequenceBuilder(goToBoardAfterSlides.end())
-                .forward(3)
-                .build();
-        drive.followTrajectorySequence(forwarddd);
-        resetStuff();
-        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(forwarddd.end())
-                .strafeRight(25)
-                .addTemporalMarker(0.5, () -> {
+        sleep(200);
+        Pose2d firstBoardPos  = new Pose2d(-45,-56,Math.toRadians(90));
+        drive.setPoseEstimate(firstBoardPos);
+        TrajectorySequence forwarddd = drive.trajectorySequenceBuilder(firstBoardPos)
+                .forward(4)
+                .addTemporalMarker(.5,() ->{
                     resetStuff();
                 })
                 .build();
-        drive.followTrajectorySequence(strafeRight);
+        drive.followTrajectorySequence(forwarddd);
+
+        TrajectorySequence goBackToStack = drive.trajectorySequenceBuilder(forwarddd.end())
+                .splineToConstantHeading(new Vector2d(-9.9,20),Math.toRadians(133))
+                //   .splineToConstantHeading(new Vector2d(-12.9,0),Math.toRadians(120))
+                .lineToLinearHeading(new Pose2d(-15,49,Math.toRadians(90)))
+                .forward(1.5,setSpeed(15),setAccelatation())
+                .build();
+        drive.followTrajectorySequence(goBackToStack);
+        Intake.setPower(-1);
+        LeftBox.setPosition(0.81);
+        RightBox.setPosition(0.96);
+        cheeksClosed();
+
+        sleep(300);
+        cheeksSpread();
+        sleep(300);
+        cheeksClosed();
+        sleep(300);
+        cheeksSpread();
+        sleep(200);
+
+        //Second Cycle
+
+        TrajectorySequence gotoBoard2Point0 = drive.trajectorySequenceBuilder(goBackToStack.end())
+                .back(4)
+                .splineToConstantHeading(new Vector2d(-45,-52),Math.toRadians(170))
+                .build();
+        drive.followTrajectorySequence(gotoBoard2Point0);
+        changingLinearSlides(1500,0.8,true, false);
+        sleep(300);
+
+
+        TrajectorySequence goToBoardAfterSlides2point0 = drive.trajectorySequenceBuilder(gotoBoard2Point0.end())
+                .lineTo(new Vector2d(-45, -57))
+                .lineToLinearHeading(new Pose2d(-45,-60,Math.toRadians(90)),setSpeed(5),setAccelatation())
+                .build();
+        //drive.followTrajectorySequence(goToBoardAfterSlides2point0);
+        while (backDistanceSensor.getDistance(DistanceUnit.INCH) > 2.5) {
+            LeftBack.setPower(-0.1);
+            LeftFront.setPower(-0.1);
+            RightBack.setPower(-0.1);
+            RightFront.setPower(-0.1);
+            telemetry.addData("DistanceFront", frontDistanceSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("DistanceBack", backDistanceSensor.getDistance(DistanceUnit.INCH));
+            telemetry.update();
+        }
+        LeftBack.setPower(0);
+        LeftFront.setPower(0);
+        RightBack.setPower(0);
+        RightFront.setPower(0);
+
+        LeftBox.setPosition(0.81);
+        RightBox.setPosition(0.96);
+        sleep(400);
+        Pose2d secondBoardPos = new Pose2d(-45,-56,Math.toRadians(90));
+        drive.setPoseEstimate(secondBoardPos);
+        TrajectorySequence forwarddd2dot0 = drive.trajectorySequenceBuilder(secondBoardPos)
+                .forward(4)
+                .build();
+        drive.followTrajectorySequence(forwarddd2dot0);
+        resetStuff();
+
+
+        //third cycle
+        TrajectorySequence goBackToStack3dot0 = drive.trajectorySequenceBuilder(forwarddd2dot0.end())
+                .splineToConstantHeading(new Vector2d(-11,20),Math.toRadians(133))
+                .lineToLinearHeading(new Pose2d(-15,49,Math.toRadians(90)))
+                .forward(1.9,setSpeed(10),setAccelatation())
+                .build();
+        drive.followTrajectorySequence(goBackToStack3dot0);
+        Intake.setPower(-1);
+        LeftBox.setPosition(0.81);
+        RightBox.setPosition(0.96);
+        cheeksClosed();
+        sleep(200);
+        cheeksSpread();
+        TrajectorySequence gotopark = drive.trajectorySequenceBuilder(goBackToStack3dot0.end())
+                .forward(1)
+                .lineTo(new Vector2d(-18.9,-60))
+                .build();
+        drive.followTrajectorySequence(gotopark);
+
+
+
+
+
+
+
+//
+//
+//
+//        resetStuff();
+//
+//        TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(forwarddd.end())
+//                .strafeRight(20)
+//                .addTemporalMarker(0.5, () -> {
+//                    resetStuff();
+//                })
+//                .build();
+//        drive.followTrajectorySequence(strafeRight);
 
         telemetry.addData("Left  Slide Position", LeftLinearSlide.getCurrentPosition());
         telemetry.update();
@@ -631,7 +823,7 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
     private TrajectoryVelocityConstraint setSpeed(int speed) {
         return SampleMecanumDrive.getVelocityConstraint(speed, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
     }
-    private void cheeksOpen(){
+    private void cheeksSpread(){
         leftCheek.setPosition(.49);
         rightCheek.setPosition(.46);
     }
