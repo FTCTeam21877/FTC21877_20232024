@@ -772,7 +772,7 @@ public class BlueDepotSTACKSTATES extends LinearOpMode {
         Recognition myTfodRecognition;
         float x = 1000;
         float y = 1000;
-        int position = 3;
+        int position = 1;
         float previousWidth = 20000;
         float previousHeight = 20000;
         float smallestX = 0;
@@ -808,13 +808,13 @@ public class BlueDepotSTACKSTATES extends LinearOpMode {
             }
 
         }
-        if (left < 220) {
-            position = 1;
-        } else if (left >= 220 && left < 1200) {
+        if (left > 400) {
+            position = 3;
+        } else if (left >= 190 && left < 400) {
             position = 2;
         }
         else {
-            position = 3;
+            position = 1;
         }
         telemetry.addData("- Left", JavaUtil.formatNumber(left, 0));
 

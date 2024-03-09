@@ -388,9 +388,9 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
             }
             telemetry.addData("- Left", JavaUtil.formatNumber(left, 0));
         }
-        if (left < 220) {
+        if (left < 250) {
             position = 1;
-        } else if (left >= 220 && left < 1200) {
+        } else if (left >= 220 && left < 600) {
             position = 2;
         }
         else {
