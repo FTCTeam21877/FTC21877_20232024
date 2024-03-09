@@ -21,7 +21,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "BlueLeftV1CircuitBreakers")
+@Autonomous(name = "BlueBoardNoStack")
 public class BlueLeftV1CircuitBreakers extends LinearOpMode {
     //ARNAV KIRSHU PRANAV
     private DcMotor LeftLinearSlide;
@@ -34,7 +34,9 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
     private Servo LeftBox;
     private Servo RightBox;
     TfodProcessor myTfodProcessor;
-    private Servo Dicky;
+    //private Servo Dicky;
+    private Servo leftCheek;
+    private Servo rightCheek;
     private Servo DroneLauncber;
     private Servo DroneWrist;
     private DcMotor Intake;
@@ -53,7 +55,9 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         DroneWrist = hardwareMap.get(Servo.class, "DroneWrist");
         LeftBox = hardwareMap.get(Servo.class, "LeftBox");
         RightBox = hardwareMap.get(Servo.class, "RightBox");
-        Dicky = hardwareMap.get(Servo.class,"Dicky");
+        //Dicky = hardwareMap.get(Servo.class,"Dicky");
+        leftCheek = hardwareMap.get(Servo.class, "LeftCheek");
+        rightCheek = hardwareMap.get(Servo.class, "RightCheek");
         DroneLauncber = hardwareMap.get(Servo.class, "DroneLauncber");
         Intake = hardwareMap.get(DcMotor.class, "Intake");
         RightFront = hardwareMap.get(DcMotor.class, "RightFront");
@@ -66,11 +70,12 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         LeftFront.setDirection(DcMotor.Direction.REVERSE);
         RightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
         BoxWrist.setPosition(0.14);
-        Dicky.setPosition(0);
+        //Dicky.setPosition(0);
         LeftBox.setPosition(1);
         RightBox.setPosition(0.96);
         DroneLauncber.setPosition(1);
         DroneWrist.setPosition(0);
+        cheeksSpread();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(65,-34, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
@@ -89,8 +94,6 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         waitForStart();
         int i = 3;
         while (position < 0 && i >0 ) {
-            sleep(1000);
-            telemetry.addData("Sleeping..", i);
             myTfodRecognitions = myTfodProcessor.getRecognitions();
             if (myTfodRecognitions!= null && myTfodRecognitions.size() > 0) {
                 position = getPosition(myTfodRecognitions);
@@ -99,6 +102,7 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
             i-=1;
             telemetry.update();
         }
+//
         if(position == 1){
             left(drive,startPose);
         }
@@ -111,12 +115,15 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
     }
 
     private void left(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.51);
+        //Dicky.setPosition(0.51);
+        cheeksMiddle();
+        cheeksClosed();
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(44, -48, Math.toRadians(150)))
+                .lineToLinearHeading(new Pose2d(44, -46, Math.toRadians(150)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
-        hard();
+//        hard();
+        cheeksSpread();
 //        Intake.setPower(.5);
 //        sleep(800);
 //        Intake.setPower(0);
@@ -126,21 +133,18 @@ public class BlueLeftV1CircuitBreakers extends LinearOpMode {
         drive.followTrajectorySequence(goToBoard);
         LeftBox.setPosition(1);
         RightBox.setPosition(0.7);
-        changingLinearSlides(1000,0.8,true, false);
+        changingLinearSlides(900,0.8,true, false);
 
         TrajectorySequence forwarrrd = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(3, setSpeed(5), setAccelatation())
+                .back(3, setSpeed(4), setAccelatation())
         .build();
         drive.followTrajectorySequence(forwarrrd);
-        LeftBox.setPosition(.81);
+        LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
-sleep(500);
-        changingLinearSlides(1300,0.8,true, false);
-
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(forwarrrd.end())
-                .forward(4)
-                .strafeRight(20)
+                .forward(5)
+                .strafeRight(19)
                 .addTemporalMarker(0.8, () -> {
                     resetStuff();
                 })
@@ -151,37 +155,37 @@ sleep(500);
         telemetry.update();
     }
     private void middle(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.51);
+//        Dicky.setPosition(0.51);
+        cheeksMiddle();
+        cheeksClosed();
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(35.5,-32))
+                .lineTo(new Vector2d(37,-32))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
-        hard();
+//        hard();
+        cheeksSpread();
 //        Intake.setPower(.5);
 //        sleep(800);
 //        Intake.setPower(0);
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(39.25, -67, Math.toRadians(90)))
+                .back(3)
+                .lineToLinearHeading(new Pose2d(39.25, -68, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
-        changingLinearSlides(1000,0.8,true, false);
+        changingLinearSlides(900,0.8,true, false);
 
         TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(3,setSpeed(5),setAccelatation())
+                .back(2.5,setSpeed(3),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBack);
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
-        sleep(500);
-        changingLinearSlides(1300,0.8,true, false);
-
-
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goBack.end())
-                .forward(2.5)
-                .strafeRight(25)
-                .addTemporalMarker(0.5, () -> {
+                .forward(3)
+                .strafeRight(24)
+                .addTemporalMarker(0.8, () -> {
                     resetStuff();
                 })
                 .build();
@@ -191,13 +195,16 @@ sleep(500);
         telemetry.update();
     }
     private void right(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.51);
+//        Dicky.setPosition(0.51);
+        cheeksMiddle();
+        cheeksClosed();
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(35, -33, Math.toRadians(90)))
                 .forward(3)
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
-        hard();
+//        hard();
+        cheeksSpread();
 //        Intake.setPower(.5);
 //        sleep(800);
 //        Intake.setPower(0);
@@ -208,20 +215,15 @@ sleep(500);
         drive.followTrajectorySequence(goToBoard);
         changingLinearSlides(1000,0.8,true, false);
         TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(1.5,setSpeed(5),setAccelatation())
+                .back(3,setSpeed(3),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBack);
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
-        sleep(499);
-        changingLinearSlides(1300,0.8,true, true);
-
-
-
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goBack.end())
-                .forward(2.5)
-                .strafeRight(33)
+                .forward(3.5)
+                .strafeRight(31)
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
                 })
@@ -290,7 +292,7 @@ sleep(500);
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("BlueCupCircuitMakers.tflite");
+        myTfodProcessorBuilder.setModelFileName("BlueCupV4.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("BlueCup"));
         // Set the aspect ratio for the images used when the model was created.
@@ -386,9 +388,9 @@ sleep(500);
             }
             telemetry.addData("- Left", JavaUtil.formatNumber(left, 0));
         }
-        if (left < 250) {
+        if (left < 220) {
             position = 1;
-        } else if (left >= 250 && left < 1200) {
+        } else if (left >= 220 && left < 1200) {
             position = 2;
         }
         else {
@@ -400,20 +402,34 @@ sleep(500);
         telemetry.update();
         return position;
     }
-    private void soft(){
-        Dicky.setPosition(0.45);
-        sleep(100);
-    }
-    private void hard(){
-        Dicky.setPosition(0);
-        sleep(100);
-    }
+//    private void soft(){
+//        Dicky.setPosition(0.45);
+//        sleep(100);
+//    }
+//    private void hard(){
+//        Dicky.setPosition(0);
+//        sleep(100);
+//    }
     private TrajectoryVelocityConstraint setSpeed(int speed) {
         return SampleMecanumDrive.getVelocityConstraint(speed, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
     }
 
     private TrajectoryAccelerationConstraint setAccelatation() {
         return SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
+    }
+
+    private void cheeksSpread(){
+        leftCheek.setPosition(.49);
+        rightCheek.setPosition(.46);
+    }
+    private void cheeksClosed(){
+        leftCheek.setPosition(0);
+        rightCheek.setPosition(1);
+    }
+    private void cheeksMiddle(){
+        leftCheek.setPosition(.25);
+        rightCheek.setPosition(.85);
+        sleep(300);
     }
 
 

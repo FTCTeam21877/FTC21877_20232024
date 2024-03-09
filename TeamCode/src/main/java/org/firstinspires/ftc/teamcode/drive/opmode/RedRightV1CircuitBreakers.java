@@ -21,7 +21,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "RedRightV1CircuitBreakers")
+@Autonomous(name = "RedBoardNoStack")
 public class RedRightV1CircuitBreakers extends LinearOpMode {
     //ARNAV KIRSHU PRANAV
     private DcMotor LeftLinearSlide;
@@ -41,6 +41,8 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
     private DcMotor RightFront;
     private DcMotor RightBack;
     private Servo DroneWrist;
+    private Servo leftCheek;
+    private Servo rightCheek;
     VisionPortal myVisionPortal;
 
 
@@ -56,10 +58,12 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         RightBox = hardwareMap.get(Servo.class, "RightBox");
         DroneLauncber = hardwareMap.get(Servo.class, "DroneLauncber");
         Intake = hardwareMap.get(DcMotor.class, "Intake");
-        Dicky = hardwareMap.get(Servo.class,"Dicky");
+        //Dicky = hardwareMap.get(Servo.class,"Dicky");
         RightFront = hardwareMap.get(DcMotor.class, "RightFront");
         RightBack = hardwareMap.get(DcMotor.class, "RightBack");
         DroneWrist = hardwareMap.get(Servo.class, "DroneWrist");
+        leftCheek = hardwareMap.get(Servo.class, "LeftCheek");
+        rightCheek = hardwareMap.get(Servo.class, "RightCheek");
         LeftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LeftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -72,7 +76,8 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         RightBox.setPosition(0.7);
         DroneLauncber.setPosition(1);
         DroneWrist.setPosition(0);
-        Dicky.setPosition(0);
+        //Dicky.setPosition(0);
+        cheeksSpread();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(-65,-34, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
@@ -104,6 +109,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
             position = getPosition(myTfodRecognitions);
             telemetry.update();
         }
+//
         if(position==1){
             leftSide(drive,startPose);
         }else if(position==2){
@@ -115,44 +121,35 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
     }
 
     private void right(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.51);
+        //Dicky.setPosition(0.51);
+        cheeksMiddle();
+        cheeksClosed();
         TrajectorySequence goToDropingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-43, -49, Math.toRadians(30)))
+                .lineToLinearHeading(new Pose2d(-43, -48, Math.toRadians(30)))
                 .build();
         drive.followTrajectorySequence(goToDropingPose);
 //        Intake.setPower(.5);
 //        sleep(800);
 //        Intake.setPower(0);
-        hard();
+       // hard();
+        cheeksSpread();
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDropingPose.end())
-                .lineToLinearHeading(new Pose2d(-44, -67, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-44, -68, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
-        changingLinearSlides(1000,0.8,true, false);
+        changingLinearSlides(900,0.8,true, false);
         TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(3,setSpeed(5),setAccelatation())
+                .back(3,setSpeed(4),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBack);
-
-
-
 
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
 
-
-
-
-        sleep(500);
-        changingLinearSlides(1300,0.8,true, false);
-
-
-
-
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goBack.end())
-                .forward(2)
-                .lineTo(new Vector2d(-65,-65))
+                .forward(3)
+                .lineTo(new Vector2d(-63.5,-65))
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
                 })
@@ -163,7 +160,9 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         telemetry.update();
     }
     private void middle(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.51);
+       // Dicky.setPosition(0.51);
+        cheeksMiddle();
+        cheeksClosed();
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(-35.5,-32))
                 .build();
@@ -172,32 +171,26 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
 //        Intake.setPower(.5);
 //        sleep(800);
 //        Intake.setPower(0);
-        hard();
+        //hard();
+        cheeksSpread();
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(-36.75, -67, Math.toRadians(90)))
+                .back(4)
+                .lineToLinearHeading(new Pose2d(-39, -67, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
-        changingLinearSlides(1000,0.8,true, false);
+        changingLinearSlides(900,0.8,true, false);
         TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(2,setSpeed(5),setAccelatation())
+                .back(3.5,setSpeed(4),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBack);
 
-
-
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
-        sleep(500);
-        changingLinearSlides(1200,0.8,true, false);
 
-
-
-
-
-        sleep(500);
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goBack.end())
-                .lineTo(new Vector2d(-65,-65))
+                .forward(3)
+                .lineTo(new Vector2d(-64,-64))
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
                 })
@@ -208,42 +201,38 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         telemetry.update();
     }
     private void leftSide(SampleMecanumDrive drive, Pose2d startPose) {
-        Dicky.setPosition(0.51);
+        //Dicky.setPosition(0.51);
+        cheeksMiddle();
+        cheeksClosed();
         TrajectorySequence goToDroppingPose = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-35, -33, Math.toRadians(90)))
-                .forward(3)
+                .lineToLinearHeading(new Pose2d(-37, -31, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToDroppingPose);
 
 //        Intake.setPower(.5);
 //        sleep(800);
 //        Intake.setPower(0);
-        hard();
+        cheeksSpread();
 
         TrajectorySequence goToBoard = drive.trajectorySequenceBuilder(goToDroppingPose.end())
-                .lineToLinearHeading(new Pose2d(-32, -68, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-34, -68, Math.toRadians(90)))
                 .build();
         drive.followTrajectorySequence(goToBoard);
-        changingLinearSlides(1000,0.8,true, false);
+        changingLinearSlides(900,0.8,true, false);
         TrajectorySequence goBack = drive.trajectorySequenceBuilder(goToBoard.end())
-                .back(2.5,setSpeed(5),setAccelatation())
+                .back(3.5,setSpeed(3),setAccelatation())
                 .build();
         drive.followTrajectorySequence(goBack);
-
-
 
         LeftBox.setPosition(0.81);
         RightBox.setPosition(0.96);
 
-
-
-
-        sleep(500);
-        changingLinearSlides(1300,0.8,true, false);
+//        sleep(500);
+//        changingLinearSlides(1300,0.8,true, false);
 
         TrajectorySequence strafeRight = drive.trajectorySequenceBuilder(goBack.end())
-                .forward(2.5)
-                .strafeLeft(33)
+                .forward(4)
+                .strafeLeft(28)
                 .addTemporalMarker(0.5, () -> {
                     resetStuff();
                 })
@@ -318,7 +307,7 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("model_20240120_172231.tflite");
+        myTfodProcessorBuilder.setModelFileName("RedCupV5.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedCup"));
         // Set the aspect ratio for the images used when the model was created.
@@ -416,9 +405,9 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
         }
 
         telemetry.addData("- Left", JavaUtil.formatNumber(left, 0) );
-        if (left < 200) {
+        if (left < 220) {
             position = 1;
-        } else if (left >= 200 && left < 1200) {
+        } else if (left >= 220 && left < 1200) {
             position = 2;
         }
         else {
@@ -434,6 +423,20 @@ public class RedRightV1CircuitBreakers extends LinearOpMode {
 
     private TrajectoryAccelerationConstraint setAccelatation() {
         return SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
+    }
+
+    private void cheeksSpread(){
+        leftCheek.setPosition(.49);
+        rightCheek.setPosition(.46);
+    }
+    private void cheeksClosed(){
+        leftCheek.setPosition(0);
+        rightCheek.setPosition(1);
+    }
+    private void cheeksMiddle(){
+        leftCheek.setPosition(.25);
+        rightCheek.setPosition(.85);
+        sleep(300);
     }
 
 
