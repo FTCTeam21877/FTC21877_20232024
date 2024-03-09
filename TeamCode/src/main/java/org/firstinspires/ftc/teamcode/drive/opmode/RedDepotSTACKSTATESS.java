@@ -810,7 +810,7 @@ public class RedDepotSTACKSTATESS extends LinearOpMode {
         }
         if (left < 250) {
             position = 1;
-        } else if (left >= 250 && left < 1200) {
+        } else if (left >= 250 && left < 600) {
             position = 2;
         }
         else {
