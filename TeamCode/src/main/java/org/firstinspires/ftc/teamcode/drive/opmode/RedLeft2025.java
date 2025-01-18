@@ -58,7 +58,7 @@ public class RedLeft2025 extends LinearOpMode {
         clawRightServo.setPosition(1.00);
         sleep(1000);
         wristServo.setDirection(Servo.Direction.REVERSE);
-        wristServo.setPosition(0.05);
+        wristServo.setPosition(0.02);
         armMotor.setTargetPosition(0);
         //distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
         // a custom TFLite object detection model.
@@ -107,7 +107,7 @@ public class RedLeft2025 extends LinearOpMode {
 
                 .addTemporalMarker(0, () -> {
                     wristServo.setPosition(0.3);
-                    moveViperslides(2400, 1);
+                    moveViperslides(2600, 1);
                 })
                 .lineTo(new Vector2d(-35, 10), setSpeed(15), setAccelatation())
                 .addTemporalMarker(2, () -> {
@@ -128,7 +128,7 @@ public class RedLeft2025 extends LinearOpMode {
                     wristServo.setPosition(0.05);
                     moveViperslides(0, 0.5);
                 })
-                .lineToLinearHeading(new Pose2d(-43.5, 50, Math.toRadians(0)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-41, 50, Math.toRadians(0)), setSpeed(20), setAccelatation())
                 //.lineTo(new Vector2d(-50, 45), setSpeed(20), setAccelatation())
                 //.lineTo(new Vector2d(-40, 45), setSpeed(20), setAccelatation())
                 .addTemporalMarker(2, () -> {
@@ -173,9 +173,9 @@ public class RedLeft2025 extends LinearOpMode {
 
         //Drop into basket
         TrajectorySequence goTo2ndBlock = drive.trajectorySequenceBuilder(dropIntoBasket.end())
-                .lineToLinearHeading(new Pose2d(-41, 60, Math.toRadians(0)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-41, 62, Math.toRadians(0)), setSpeed(20), setAccelatation())
                 .addTemporalMarker(0, () -> {
-                    wristServo.setPosition(0.33);
+                    wristServo.setPosition(0.3);
                     moveArm(0, 1);
                     moveViperslides(0, 1);
 
@@ -227,6 +227,20 @@ public class RedLeft2025 extends LinearOpMode {
         drive.followTrajectorySequence(goTo3rdBlock);
         drive.followTrajectorySequence(dropInto2ndBasket);
 
+        TrajectorySequence park = drive.trajectorySequenceBuilder(dropInto2ndBasket.end())
+                //.lineToLinearHeading(new Pose2d(-41, 65, Math.toRadians(60)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-36, 62, Math.toRadians(45)), setSpeed(20), setAccelatation())
+                .addTemporalMarker(0, () -> {
+                    wristServo.setPosition(0.05);
+                    moveArm(0, 1);
+                    moveViperslides(0, 1);
+
+
+                })
+
+
+                .build();
+        drive.followTrajectorySequence(park);
 
     }
 
