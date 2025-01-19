@@ -127,12 +127,12 @@ public class RedRight2025 extends LinearOpMode {
                     moveViperslides(0, 0.5);
                 })
                 //.lineTo(new Vector2d(-50, -23), setSpeed(20), setAccelatation())
-                .lineToLinearHeading(new Pose2d(-62, -50, Math.toRadians(-90)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-62, -50, Math.toRadians(-90)), setSpeed(30), setAccelatation())
                 .addTemporalMarker(2, () -> {
                     moveViperslides(1300, 1);
                     wristServo.setPosition(0.35);
                 })
-                .lineToLinearHeading(new Pose2d(-63, -56, Math.toRadians(-90)), setSpeed(10), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-60, -56, Math.toRadians(-90)), setSpeed(10), setAccelatation())
                 .addTemporalMarker(7, () -> {
                     clawRightServo.setPosition(1);
                     clawLeftServo.setPosition(0);
@@ -148,7 +148,7 @@ public class RedRight2025 extends LinearOpMode {
 
         TrajectorySequence dropTheSpecimen1 = drive.trajectorySequenceBuilder(goToSpecimen.end())
 
-                .lineToLinearHeading(new Pose2d(-55, -10, Math.toRadians(0)), setSpeed(15), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-55, -9, Math.toRadians(0)), setSpeed(30), setAccelatation())
 
                 .addTemporalMarker(0, () -> {
                     wristServo.setPosition(0.3);
@@ -172,7 +172,7 @@ public class RedRight2025 extends LinearOpMode {
 
 
     TrajectorySequence goToSpecimen2 = drive.trajectorySequenceBuilder(dropTheSpecimen1.end())
-            .lineTo(new Vector2d(-55, -10), setSpeed(20), setAccelatation())
+            .lineTo(new Vector2d(-55, -9), setSpeed(20), setAccelatation())
             //.turn(Math.toRadians(-90))
             .addTemporalMarker(1, () -> {
                 wristServo.setPosition(0.05);
@@ -196,7 +196,7 @@ public class RedRight2025 extends LinearOpMode {
 
         TrajectorySequence dropTheSpecimen2 = drive.trajectorySequenceBuilder(goToSpecimen2.end())
 
-                .lineToLinearHeading(new Pose2d(-55, -10, Math.toRadians(0)), setSpeed(15), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-55, -8, Math.toRadians(0)), setSpeed(30), setAccelatation())
 
                 .addTemporalMarker(0, () -> {
                     wristServo.setPosition(0.3);
@@ -215,7 +215,6 @@ public class RedRight2025 extends LinearOpMode {
 
                 .build();
         drive.followTrajectorySequence(dropTheSpecimen2);
-        sleep(500);
 
 
     }
