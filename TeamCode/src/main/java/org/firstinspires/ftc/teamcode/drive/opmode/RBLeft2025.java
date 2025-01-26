@@ -122,7 +122,7 @@ public class RBLeft2025 extends LinearOpMode {
 
         //Go to block
         TrajectorySequence goToBlock = drive.trajectorySequenceBuilder(dropTheSample.end())
-                .lineTo(new Vector2d(-60, 10), setSpeed(20), setAccelatation())
+                .lineTo(new Vector2d(-52, 10), setSpeed(100), setAccelatation())
                 .addTemporalMarker(1, () -> {
                     moveArm(200, 1);
                     moveWrist(-350,1);
@@ -232,11 +232,11 @@ public class RBLeft2025 extends LinearOpMode {
 
         TrajectorySequence park = drive.trajectorySequenceBuilder(dropInto2ndBasket.end())
                 //.lineToLinearHeading(new Pose2d(-41, 65, Math.toRadians(60)), setSpeed(20), setAccelatation())
-                .lineToLinearHeading(new Pose2d(-36, 62, Math.toRadians(0)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-8, 24, Math.toRadians(90)), setSpeed(20), setAccelatation())
                 .addTemporalMarker(1, () -> {
                     moveWrist(-350,1);
                     moveArm(0, 1);
-                    moveViperslides(0, 1);
+                    moveViperslides(1000, 1);
 
 
                 })
