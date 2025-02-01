@@ -130,12 +130,12 @@ public class RBRight2025 extends LinearOpMode {
                     moveViperslides(0, 0.5);
                 })
                 //.lineTo(new Vector2d(-50, -23), setSpeed(20), setAccelatation())
-                .lineToLinearHeading(new Pose2d(-62, -50, Math.toRadians(-90)), setSpeed(30), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-63, -50, Math.toRadians(-90)), setSpeed(30), setAccelatation())
                 .addTemporalMarker(2, () -> {
                     moveViperslides(1150, 1);
                     moveWrist(-10,1);
                 })
-                .lineToLinearHeading(new Pose2d(-60, -56, Math.toRadians(-90)), setSpeed(10), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-61, -56, Math.toRadians(-90)), setSpeed(10), setAccelatation())
                 .addTemporalMarker(7, () -> {
                     clawRightServo.setPosition(1);
                     clawLeftServo.setPosition(0);
@@ -184,7 +184,7 @@ public class RBRight2025 extends LinearOpMode {
             //.lineTo(new Vector2d(-50, -23), setSpeed(20), setAccelatation())
             .lineToLinearHeading(new Pose2d(-58, -52, Math.toRadians(-90)), setSpeed(20), setAccelatation())
             .addTemporalMarker(2, () -> {
-                moveViperslides(1200, 1);
+                moveViperslides(1150, 1);
                 moveWrist(-10,1);
             })
             .lineToLinearHeading(new Pose2d(-61, -58, Math.toRadians(-90)), setSpeed(10), setAccelatation())
