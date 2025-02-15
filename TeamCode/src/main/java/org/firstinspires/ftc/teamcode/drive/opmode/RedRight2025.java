@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,7 +15,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-
+@Disabled
 @Autonomous(name = "RedRight2025")
 public class RedRight2025 extends LinearOpMode {
 
@@ -216,8 +217,35 @@ public class RedRight2025 extends LinearOpMode {
                 .build();
         drive.followTrajectorySequence(dropTheSpecimen2);
 
+        TrajectorySequence pushTheSamples = drive.trajectorySequenceBuilder(dropTheSpecimen2.end())
+
+                .lineTo(new Vector2d(-36, -6), setSpeed(15), setAccelatation())
+
+                .addTemporalMarker(0, () -> {
+                    wristServo.setPosition(0.05);
+                    moveViperslides(0, 1);
+                })
+
+                .lineTo(new Vector2d(-36, -36), setSpeed(15), setAccelatation())
+                .lineTo(new Vector2d(-3, -36), setSpeed(15), setAccelatation())
+                .lineTo(new Vector2d(-3, -42), setSpeed(15), setAccelatation())
+                .lineTo(new Vector2d(-50, -42), setSpeed(15), setAccelatation())
+                .lineTo(new Vector2d(-3, -42), setSpeed(15), setAccelatation())
+                .lineTo(new Vector2d(-3, -55), setSpeed(15), setAccelatation())
+                .lineTo(new Vector2d(-50, -55), setSpeed(15), setAccelatation())
+
+                .build();
+        drive.followTrajectorySequence(pushTheSamples);
+
 
     }
+
+
+
+
+
+
+
 
 
 

@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,8 +17,9 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name = "RBRight2025" , preselectTeleOp= "Tele op final")
-public class RBRight2025 extends LinearOpMode {
+@Autonomous(name = "RBRightSplineTest2025" , preselectTeleOp= "Tele op final")
+@Disabled
+public class RBRightSplineTest2025 extends LinearOpMode {
 
 //test
     SampleMecanumDrive drive;
@@ -55,7 +58,6 @@ public class RBRight2025 extends LinearOpMode {
         clawLeftServo.setPosition(0.00);
         clawRightServo.setPosition(1.00);
         sleep(1000);
-        wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wristMotor.setDirection(DcMotor.Direction.REVERSE);
         wristMotor.setTargetPosition(0);
         moveWrist(-340,1);
@@ -107,7 +109,7 @@ public class RBRight2025 extends LinearOpMode {
 
                 .addTemporalMarker(0, () -> {
                     moveWrist(-25,1);
-                    moveViperslides(2575, 1);
+                    moveViperslides(2600, 1);
                 })
                 .lineTo(new Vector2d(-35, -9.5), setSpeed(15), setAccelatation())
                 .addTemporalMarker(2, () -> {
@@ -122,108 +124,10 @@ public class RBRight2025 extends LinearOpMode {
 
         //Go to board
         TrajectorySequence goToSpecimen = drive.trajectorySequenceBuilder(dropTheSample.end())
-                .lineTo(new Vector2d(-55, -10), setSpeed(30), setAccelatation())
-                //.turn(Math.toRadians(-90))
-                .addTemporalMarker(1, () -> {
-                    clawRightServo.setPosition(0.75);
-                    clawLeftServo.setPosition(0.25);
-                    moveWrist(-25,1);
-                    moveViperslides(0, 0.5);
-                })
-                //.lineTo(new Vector2d(-50, -23), setSpeed(20), setAccelatation())
-                .lineToLinearHeading(new Pose2d(-63, -50, Math.toRadians(-90)), setSpeed(30), setAccelatation())
-                .addTemporalMarker(2, () -> {
-                    moveViperslides(1125, 1);
-                    moveWrist(-10,1);
-                })
-                .lineToLinearHeading(new Pose2d(-61, -56, Math.toRadians(-90)), setSpeed(10), setAccelatation())
-                .addTemporalMarker(7, () -> {
-                    clawRightServo.setPosition(1);
-                    clawLeftServo.setPosition(0);
-                    sleep(500);
-                    moveViperslides(1600, 1);
-                })
-
-
-                //.lineToLinearHeading(new Pose2d(-50, -50, Math.toRadians(25)), setSpeed(20), setAccelatation())
+                .splineToLinearHeading(new Pose2d(-47, -20, Math.toRadians(180)),Math.toRadians(0))
                 .build();
         drive.followTrajectorySequence(goToSpecimen);
 
-
-        TrajectorySequence dropTheSpecimen1 = drive.trajectorySequenceBuilder(goToSpecimen.end())
-
-                .lineToLinearHeading(new Pose2d(-55, -9, Math.toRadians(0)), setSpeed(30), setAccelatation())
-
-                .addTemporalMarker(0, () -> {
-                    moveWrist(-25,1);
-                    moveViperslides(2680, 1);
-                })
-                .lineTo(new Vector2d(-37, -3.5), setSpeed(15), setAccelatation())
-                .addTemporalMarker(7, () -> {
-                    moveViperslides(1800, 0.5);
-                })
-
-                .lineTo(new Vector2d(-31.5, -3.5), setSpeed(15), setAccelatation())
-                .addTemporalMarker(7, ()-> {
-                    clawRightServo.setPosition(0.75);
-                    clawLeftServo.setPosition(0.25);
-                })
-
-                .build();
-        drive.followTrajectorySequence(dropTheSpecimen1);
-        sleep(500);
-
-
-
-    TrajectorySequence goToSpecimen2 = drive.trajectorySequenceBuilder(dropTheSpecimen1.end())
-            .lineTo(new Vector2d(-45, -9), setSpeed(30), setAccelatation())
-            //.turn(Math.toRadians(-90))
-            .addTemporalMarker(1, () -> {
-                moveWrist(-10,1);
-                moveViperslides(0, 0.5);
-            })
-            //.lineTo(new Vector2d(-50, -23), setSpeed(20), setAccelatation())
-            .lineToLinearHeading(new Pose2d(-41.5, -52, Math.toRadians(0)), setSpeed(30), setAccelatation())
-            .lineToLinearHeading(new Pose2d(-37.5, -52, Math.toRadians(0)), setSpeed(30), setAccelatation())
-            .addTemporalMarker(4, () -> {
-                moveViperslides(0, 1);
-                moveWrist(-10,1);
-                sleep(500);
-                clawRightServo.setPosition(1);
-                clawLeftServo.setPosition(0);
-
-
-            })
-            .build();
-            drive.followTrajectorySequence(goToSpecimen2);
-
-
-
-
-        TrajectorySequence park = drive.trajectorySequenceBuilder(goToSpecimen2.end())
-
-
-                .lineToLinearHeading(new Pose2d(-55, -49, Math.toRadians(-110)), setSpeed(30), setAccelatation())
-
-
-                .build();
-        drive.followTrajectorySequence(park);
-        sleep(300);
-        clawRightServo.setPosition(0.75);
-        clawLeftServo.setPosition(0.25);
-        sleep(500);
-        moveViperslides(500, 1);
-        sleep(600);
-
-        TrajectorySequence park2 = drive.trajectorySequenceBuilder(park.end())
-        .lineToLinearHeading(new Pose2d(-56, -49, Math.toRadians(-20)), setSpeed(30), setAccelatation())
-                .addTemporalMarker(4, () -> {
-                    moveWrist(0,1);
-                    moveViperslides(0, 1);
-
-                })
-                .build();
-        drive.followTrajectorySequence(park2);
 
     }
 

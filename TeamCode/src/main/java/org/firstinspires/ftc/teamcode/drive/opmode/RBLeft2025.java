@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name = "RBLeft2025")
+@Autonomous(name = "RBChamber2025", preselectTeleOp= "Tele op final")
 public class RBLeft2025 extends LinearOpMode {
 
 
@@ -55,6 +55,7 @@ public class RBLeft2025 extends LinearOpMode {
         clawLeftServo.setPosition(0.00);
         clawRightServo.setPosition(1.00);
         sleep(1000);
+        wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wristMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         wristMotor.setTargetPosition(0);
         moveWrist(-340,1);
@@ -129,7 +130,7 @@ public class RBLeft2025 extends LinearOpMode {
                     moveViperslides(0, 0.5);
                     moveArm(0,1);
                 })
-                .lineToLinearHeading(new Pose2d(-42, 49, Math.toRadians(0)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-41.5, 49, Math.toRadians(0)), setSpeed(20), setAccelatation())
                 //.lineTo(new Vector2d(-50, 45), setSpeed(20), setAccelatation())
                 //.lineTo(new Vector2d(-40, 45), setSpeed(20), setAccelatation())
                 .addTemporalMarker(2, () -> {
@@ -154,7 +155,7 @@ public class RBLeft2025 extends LinearOpMode {
                 })
                 .lineToLinearHeading(new Pose2d(-59, 54, Math.toRadians(-45)), setSpeed(20), setAccelatation())
                 .addTemporalMarker(2, () -> {
-                    moveWrist(75,1);
+                    moveWrist(15,1);
                     moveArm(2900, 1);
                     moveViperslides(2300, 1);
                 })
@@ -164,7 +165,7 @@ public class RBLeft2025 extends LinearOpMode {
 
         //Drop into basket
         TrajectorySequence dropIntoBasket = drive.trajectorySequenceBuilder(goToBasket.end())
-                .lineToLinearHeading(new Pose2d(-60, 56, Math.toRadians(-45)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-60, 59, Math.toRadians(-45)), setSpeed(20), setAccelatation())
                 .addTemporalMarker(2, () -> {
                     sleep(750);
                     clawRightServo.setPosition(0.75);
@@ -175,7 +176,7 @@ public class RBLeft2025 extends LinearOpMode {
 
         //Drop into basket
         TrajectorySequence goTo2ndBlock = drive.trajectorySequenceBuilder(dropIntoBasket.end())
-                .lineToLinearHeading(new Pose2d(-41, 62, Math.toRadians(0)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-40, 62, Math.toRadians(0)), setSpeed(20), setAccelatation())
                 .addTemporalMarker(0, () -> {
                     moveWrist(0,1);
                     moveArm(0, 1);
@@ -194,11 +195,11 @@ public class RBLeft2025 extends LinearOpMode {
 
 
         TrajectorySequence dropInto2ndBasket = drive.trajectorySequenceBuilder(goTo2ndBlock.end())
-                .lineToLinearHeading(new Pose2d(-58, 55, Math.toRadians(0)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-58, 59, Math.toRadians(0)), setSpeed(20), setAccelatation())
                 // .lineTo(new Vector2d(-57, 60), setSpeed(10), setAccelatation())
                 .turn(Math.toRadians(-45))
                 .addTemporalMarker(6, () -> {
-                    moveWrist(40,1);
+                    moveWrist(-10,1);
                     moveArm(2900, 1);
                     moveViperslides(2400, 1);
                     sleep(2000);
@@ -227,8 +228,23 @@ public class RBLeft2025 extends LinearOpMode {
 
                 .build();
         drive.followTrajectorySequence(goTo3rdBlock);
-        drive.followTrajectorySequence(dropInto2ndBasket);
-        sleep(500);
+
+
+        TrajectorySequence dropInto3rdBasket = drive.trajectorySequenceBuilder(goTo3rdBlock.end())
+                .lineToLinearHeading(new Pose2d(-57, 64, Math.toRadians(0)), setSpeed(20), setAccelatation())
+                // .lineTo(new Vector2d(-57, 60), setSpeed(10), setAccelatation())
+                .turn(Math.toRadians(-45))
+                .addTemporalMarker(6, () -> {
+                    moveWrist(0,1);
+                    moveArm(2900, 1);
+                    moveViperslides(2400, 1);
+                    sleep(2000);
+                    clawRightServo.setPosition(0.75);
+                    clawLeftServo.setPosition(0.25);
+                })
+                .build();
+        drive.followTrajectorySequence(dropInto3rdBasket);
+        sleep(200);
 
         TrajectorySequence park = drive.trajectorySequenceBuilder(dropInto2ndBasket.end())
                 //.lineToLinearHeading(new Pose2d(-41, 65, Math.toRadians(60)), setSpeed(20), setAccelatation())
