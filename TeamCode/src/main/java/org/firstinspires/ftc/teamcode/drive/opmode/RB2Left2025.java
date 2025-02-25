@@ -172,7 +172,7 @@ public class RB2Left2025 extends LinearOpMode {
 
         //Drop into basket
         TrajectorySequence goTo2ndBlock = drive.trajectorySequenceBuilder(dropIntoBasket.end())
-                .lineToLinearHeading(new Pose2d(-40, 62, Math.toRadians(0)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-38, 62, Math.toRadians(0)), setSpeed(20), setAccelatation())
                 .addTemporalMarker(0, () -> {
                     moveWrist(0,1);
                     moveArm(0, 1);
@@ -191,7 +191,7 @@ public class RB2Left2025 extends LinearOpMode {
 
 
         TrajectorySequence dropInto2ndBasket = drive.trajectorySequenceBuilder(goTo2ndBlock.end())
-                .lineToLinearHeading(new Pose2d(-58, 59, Math.toRadians(0)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-56.5, 59, Math.toRadians(0)), setSpeed(20), setAccelatation())
                 // .lineTo(new Vector2d(-57, 60), setSpeed(10), setAccelatation())
                 .turn(Math.toRadians(-45))
                 .addTemporalMarker(6, () -> {
@@ -227,7 +227,7 @@ public class RB2Left2025 extends LinearOpMode {
 
 
         TrajectorySequence dropInto3rdBasket = drive.trajectorySequenceBuilder(goTo3rdBlock.end())
-                .lineToLinearHeading(new Pose2d(-57, 64, Math.toRadians(0)), setSpeed(20), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-57, 65, Math.toRadians(0)), setSpeed(20), setAccelatation())
                 // .lineTo(new Vector2d(-57, 60), setSpeed(10), setAccelatation())
                 .turn(Math.toRadians(-45))
                 .addTemporalMarker(6, () -> {

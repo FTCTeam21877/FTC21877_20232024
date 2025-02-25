@@ -107,7 +107,7 @@ public class RBRight2025 extends LinearOpMode {
 
                 .addTemporalMarker(0, () -> {
                     moveWrist(-25,1);
-                    moveViperslides(2575, 1);
+                    moveViperslides(2600, 1);
                 })
                 .lineTo(new Vector2d(-35, -9.5), setSpeed(15), setAccelatation())
                 .addTemporalMarker(2, () -> {
