@@ -124,9 +124,8 @@ public class RB2RightV22025 extends LinearOpMode {
 
         //Go to board
         TrajectorySequence goToSpecimen = drive.trajectorySequenceBuilder(dropTheSample.end())
-                .back(4, setSpeed(30), setAccelatation())
-                .lineTo(new Vector2d(-60, -9.5), setSpeed(20), setAccelatation())
-                .lineToLinearHeading(new Pose2d(-79, -35.5, Math.toRadians(-90)), setSpeed(30), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-60, -9.5, Math.toRadians(0)), setSpeed(30), setAccelatation())
+                .lineToLinearHeading(new Pose2d(-65, -35, Math.toRadians(-90)), setSpeed(30), setAccelatation())
                 //.turn(Math.toRadians(-90))
                 .addTemporalMarker(8, () -> {
                     moveViperslides(0, 0.5);
@@ -143,34 +142,33 @@ public class RB2RightV22025 extends LinearOpMode {
                 //.lineToLinearHeading(new Pose2d(-50, -50, Math.toRadians(25)), setSpeed(20), setAccelatation())
                 .build();
         drive.followTrajectorySequence(goToSpecimen);
-        sleep(2000);
+        sleep(500);
 
-        TrajectorySequence pickAndDropSpecimen = drive.trajectorySequenceBuilder(goToSpecimen.end())
+        moveWrist(-10, 1);
+        clawRightServo.setPosition(1);
+        clawLeftServo.setPosition(0);
+        sleep(500);
 
-                .addTemporalMarker(0, () -> {
-                    moveWrist(-10, 1);
-                    clawRightServo.setPosition(1);
-                    clawLeftServo.setPosition(0);
-                    sleep(500);
-                })
+        TrajectorySequence gotoChamber = drive.trajectorySequenceBuilder(goToSpecimen.end())
                 .lineToLinearHeading(new Pose2d(-60, -8, Math.toRadians(0)), setSpeed(30), setAccelatation())
                 .addTemporalMarker(0, () -> {
                     moveViperslides(2500, 1);
                 })
                 .lineToLinearHeading(new Pose2d(-33, 0, Math.toRadians(0)), setSpeed(20), setAccelatation())
-                .addTemporalMarker(4, () -> {
-                    moveViperslides(3000, 1);
-                })
-                .lineToLinearHeading(new Pose2d(-55, 0, Math.toRadians(0)), setSpeed(20), setAccelatation())
+
+
+
+                .build();
+        drive.followTrajectorySequence(gotoChamber);
+        moveViperslides(3000, 1);
+        TrajectorySequence DropSpecimen = drive.trajectorySequenceBuilder(gotoChamber.end())
+    .lineToLinearHeading(new Pose2d(-55, 0, Math.toRadians(0)), setSpeed(20), setAccelatation())
                 .addTemporalMarker(5 , () -> {
                     clawRightServo.setPosition(0.75);
                     clawLeftServo.setPosition(0.25);
                 })
-
                 .build();
-        drive.followTrajectorySequence(pickAndDropSpecimen);
-
-
+        drive.followTrajectorySequence(DropSpecimen);
 
 
 
